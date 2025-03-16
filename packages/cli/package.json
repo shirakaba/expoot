@@ -11,14 +11,17 @@
   "peerDependencies": {
     "@expo/cli": "*",
     "chalk": ">=4.0.0",
+    "debug": ">=4.3.4",
     "getenv": ">=1.0.0"
   },
   "devDependencies": {
     "@expo/cli": "^0.21.8",
     "@tsconfig/node22": "^22.0.0",
+    "@types/debug": "^4.1.12",
     "@types/getenv": "^1.0.0",
     "@types/node": "^22.13.10",
     "chalk": "^4.0.0",
+    "debug": "^4.3.4",
     "getenv": ">=1.0.0"
   },
   "bin": {

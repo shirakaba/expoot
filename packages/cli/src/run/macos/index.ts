@@ -12,10 +12,13 @@ export async function expootRunMacos(params = new Array<string>()) {
     const args = parseArgs({
       args: params,
       options: {
-        help: {
-          type: 'boolean',
-          short: 'h',
-        },
+        'no-install': { type: 'boolean' },
+        'no-build-cache': { type: 'boolean' },
+        'no-bundler': { type: 'boolean' },
+        scheme: { type: 'string' },
+        configuration: { type: 'string', default: 'Debug' },
+        port: { type: 'string', default: '8081' },
+        help: { type: 'boolean', short: 'h' },
       },
       allowPositionals: true,
     });
@@ -45,6 +48,7 @@ export async function expootRunMacos(params = new Array<string>()) {
       exit(0);
     }
 
+    const { runMacosAsync } = await import('./runMacosAsync.js');
     console.log('TODO: run:macos');
   } catch (error) {
     logCmdError(error);
