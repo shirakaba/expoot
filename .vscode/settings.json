@@ -1,0 +1,5 @@
+{
+  "prettier.enable": true,
+  "biome.enabled": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

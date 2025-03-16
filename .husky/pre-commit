@@ -1,0 +1,4 @@
+# `bun` and `bunx` are not on-path in `.husky/pre-commit`, so we use Node.js
+# instead (which somehow is on-path) to run a script from our package.json.
+# https://github.com/oven-sh/bun/issues/10691
+node --run on-precommit
