@@ -1,5 +1,3 @@
-// https://github.com/iamturns/eslint-config-airbnb-typescript/issues/345#issuecomment-2269783683
-/* eslint-disable import/no-unresolved */
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -14,7 +12,6 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     languageOptions: { globals: globals.browser, ecmaVersion: 'latest' },
-    'linebreak-style': ['error', 'unix'],
   },
   pluginJs.configs.recommended,
 
@@ -40,6 +37,9 @@ export default [
   },
   {
     rules: {
+      // https://github.com/iamturns/eslint-config-airbnb-typescript/issues/345#issuecomment-2269783683
+      'import/no-unresolved': 'off',
+
       'import/first': 'error',
       'import/newline-after-import': 'error',
       'import/no-duplicates': 'error',

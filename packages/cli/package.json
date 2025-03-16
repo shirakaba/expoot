@@ -1,0 +1,30 @@
+{
+  "name": "@expoot/cli",
+  "version": "0.21.8",
+  "author": "Jamie Birch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shirakaba/expoot.git",
+    "directory": "packages/cli"
+  },
+  "main": "bin.mjs",
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.0",
+    "@types/node": "^22.13.10",
+    "ts-blank-space": "^0.6.1"
+  },
+  "bin": {
+    "expoot-internal": "bin.mjs"
+  },
+  "bugs": {
+    "url": "https://github.com/shirakaba/expoot/issues"
+  },
+  "description": "Expoot's wrapper around the Expo CLI",
+  "homepage": "https://github.com/shirakaba/expoot/tree/main/packages/cli",
+  "keywords": [
+    "expoot",
+    "cli"
+  ],
+  "license": "MIT",
+  "type": "module"
+}
