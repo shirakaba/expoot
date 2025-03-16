@@ -1,14 +1,11 @@
-import { spawn } from 'node:child_process';
-import { createRequire } from 'node:module';
-import * as path from 'node:path';
-import { argv, cwd, exit } from 'node:process';
+import { argv, exit } from 'node:process';
 import { parseArgs } from 'node:util';
 
 import expoPackageJson from '@expo/cli/package.json' with { type: 'json' };
 import expootPackageJson from '@expoot/cli/package.json' with { type: 'json' };
 import chalk from 'chalk';
 
-const require = createRequire(import.meta.url);
+import { spawnExpoCli } from './spawn-expo-cli.ts';
 
 const migratedCommands = new Set([
   'init',
@@ -48,9 +45,9 @@ const migratedCommands = new Set([
   'upload:ios',
 ]);
 
-main();
+await main();
 
-function main() {
+async function main() {
   const args = parseArgs({
     args: argv.slice(2),
     options: {
@@ -67,7 +64,6 @@ function main() {
       },
     },
     allowPositionals: true,
-    allowNegative: true,
   });
 
   const {
@@ -97,7 +93,7 @@ function main() {
     console.log(chalk`
       {bold Usage}
         {dim $} npx expoot <command>
-  
+
       {bold Commands}
         start, export
         run:ios, run:android, run:macos, run:windows, prebuild
@@ -106,7 +102,7 @@ function main() {
       {bold Options}
         --version, -v   Version number
         --help, -h      Usage info
-  
+
       For more info run a command with the {bold --help} flag
         {dim $} npx expoot start --help
     `);
@@ -118,27 +114,34 @@ function main() {
     return;
   }
 
-  // TODO: intercept run:macos, run:windows, and prebuild
-
   const command = subcommand ?? 'start';
   const commandArgs = subcommand ? positionals.slice(1) : [];
   if (help) {
     commandArgs.push('--help');
   }
 
-  spawnExpoCli([command, ...commandArgs]);
-}
+  switch (subcommand) {
+    case 'prebuild': {
+      console.log(`intercepted ${subcommand}`);
+      return;
+    }
+    case 'run': {
+      console.log(`intercepted ${subcommand}`);
+      const { expootRun } = await import('./run/index.ts');
+      await expootRun(commandArgs);
+      return;
+    }
+    case 'run:macos': {
+      const { expootRunMacos } = await import('./run/macos/index.ts');
+      await expootRunMacos(commandArgs);
+      return;
+    }
+    case 'run:windows': {
+      const { expootRunWindows } = await import('./run/windows/index.ts');
+      await expootRunWindows(commandArgs);
+      return;
+    }
+  }
 
-function spawnExpoCli(args: ReadonlyArray<string>) {
-  const expoCli = path.resolve(
-    path.dirname(require.resolve('@expo/cli/package.json')),
-    (expoPackageJson as { main: string }).main
-  );
-  const child = spawn(argv[0], [expoCli, ...args], {
-    cwd: cwd(),
-    stdio: 'inherit',
-  });
-  child.on('close', (code) => {
-    exit(code ?? 1);
-  });
+  spawnExpoCli([command, ...commandArgs]);
 }

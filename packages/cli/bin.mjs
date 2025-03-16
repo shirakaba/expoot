@@ -10,7 +10,12 @@ const [executable, _file, ...rest] = argv;
 
 const child = spawn(
   executable,
-  ['--experimental-strip-types', pathToCli, ...rest],
+  [
+    '--experimental-strip-types',
+    '--experimental-require-module',
+    pathToCli,
+    ...rest,
+  ],
   {
     cwd: cwd(),
     stdio: ['inherit', 'inherit', 'pipe'],
@@ -28,7 +33,12 @@ child.stderr.on(
     // Both of these got unflagged in Node.js v23.
     if (
       data.toString().includes('ExperimentalWarning: Type Stripping') ||
-      data.toString().includes('ExperimentalWarning: Importing JSON modules')
+      data.toString().includes('ExperimentalWarning: Importing JSON modules') ||
+      data
+        .toString()
+        .includes(
+          'ExperimentalWarning: Support for loading ES Module in require()'
+        )
     ) {
       return;
     }
