@@ -20,14 +20,20 @@ const child = spawn(
   }
 );
 
-// Suppress the ExperimentalWarning from --experimental-strip-types.
+// Suppress certain ExperimentalWarnings.
 child.stderr.on(
   'data',
   /** @param {Buffer} data */
   (data) => {
-    if (!data.toString().includes('ExperimentalWarning: Type Stripping')) {
-      stderr.write(data);
+    // Both of these got unflagged in Node.js v23.
+    if (
+      data.toString().includes('ExperimentalWarning: Type Stripping') ||
+      data.toString().includes('ExperimentalWarning: Importing JSON modules')
+    ) {
+      return;
     }
+
+    stderr.write(data);
   }
 );
 

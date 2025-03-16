@@ -1,4 +1,8 @@
 {
   "extends": "@tsconfig/node22",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "resolveJsonModule": true
+  },
   "include": ["src"]
 }
