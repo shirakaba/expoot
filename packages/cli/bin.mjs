@@ -1,21 +1,36 @@
 #!/usr/bin/env node
 
-// This happy little script runs our TypeScript source directly as a subprocess
-// of the JavaScript runtime that's calling us, allowing us to forego a build
-// step.
-//
-// However, it adds about 300 ms of overhead as far as I can tell, so although
-// it's handy in dev to avoid having to run TypeScript in watch mode, we'll want
-// to offer a ready-built CLI for production usage.
-
 import { spawn } from 'node:child_process';
 import * as path from 'node:path';
-import { argv, cwd } from 'node:process';
+import { argv, cwd, env, stderr, exit } from 'node:process';
 
 const __dirname = import.meta.dirname;
 const pathToCli = path.join(__dirname, 'src/cli.ts');
+const [executable, _file, ...rest] = argv;
 
-spawn(argv[0], ['--import', 'ts-blank-space/register', pathToCli], {
-  cwd: cwd(),
-  stdio: 'inherit',
+const child = spawn(
+  executable,
+  ['--experimental-strip-types', pathToCli, ...rest],
+  {
+    cwd: cwd(),
+    stdio: ['inherit', 'inherit', 'pipe'],
+    // Ensure we don't lose colour in stderr. But if the user passed FORCE_COLOR
+    // themselves for some reason, then respect it.
+    env: { ...env, FORCE_COLOR: env.FORCE_COLOR ?? '1' },
+  }
+);
+
+// Suppress the ExperimentalWarning from --experimental-strip-types.
+child.stderr.on(
+  'data',
+  /** @param {Buffer} data */
+  (data) => {
+    if (!data.toString().includes('ExperimentalWarning: Type Stripping')) {
+      stderr.write(data);
+    }
+  }
+);
+
+child.on('close', (code) => {
+  exit(code ?? 1);
 });

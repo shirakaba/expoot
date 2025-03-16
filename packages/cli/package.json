@@ -10,8 +10,7 @@
   "main": "bin.mjs",
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
-    "@types/node": "^22.13.10",
-    "ts-blank-space": "^0.6.1"
+    "@types/node": "^22.13.10"
   },
   "bin": {
     "expoot-internal": "bin.mjs"

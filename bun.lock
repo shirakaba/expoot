@@ -28,7 +28,6 @@
       "devDependencies": {
         "@tsconfig/node22": "^22.0.0",
         "@types/node": "^22.13.10",
-        "ts-blank-space": "^0.6.1",
       },
     },
   },
@@ -546,8 +545,6 @@
     "to-regex-range": ["to-regex-range@5.0.1", "", { "dependencies": { "is-number": "^7.0.0" } }, "sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ=="],
 
     "ts-api-utils": ["ts-api-utils@2.0.1", "", { "peerDependencies": { "typescript": ">=4.8.4" } }, "sha512-dnlgjFSVetynI8nzgJ+qF62efpglpWRk8isUEWZGWlJYySCTD6aKvbUDu+zbPeDakk3bg5H4XpitHukgfL1m9w=="],
-
-    "ts-blank-space": ["ts-blank-space@0.6.1", "", { "dependencies": { "typescript": "5.1.6 - 5.8.x" } }, "sha512-LcM3W5HEyzTaXUeQITV8ploUOGe+zuuoFYsCfPscFLhx3bZn2sSfHMKxsULVG/zA7an9UhReiHv4Kk/6QzlpXQ=="],
 
     "tsconfig-paths": ["tsconfig-paths@3.15.0", "", { "dependencies": { "@types/json5": "^0.0.29", "json5": "^1.0.2", "minimist": "^1.2.6", "strip-bom": "^3.0.0" } }, "sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg=="],
 
