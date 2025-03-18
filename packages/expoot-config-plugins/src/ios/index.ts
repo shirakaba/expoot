@@ -11,6 +11,7 @@ export * as PrivacyInfo from './PrivacyInfo';
 export * as ProvisioningProfile from './ProvisioningProfile';
 export * as Target from './Target';
 export * as XcodeUtils from './utils/Xcodeproj';
+export { getInfoPlistPathFromPbxproj } from './utils/getInfoPlistPath';
 
 export type InfoPlist = IOSConfig.InfoPlist;
 export type ExpoPlist = IOSConfig.ExpoPlist;

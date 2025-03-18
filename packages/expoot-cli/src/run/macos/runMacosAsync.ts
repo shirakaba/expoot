@@ -5,8 +5,6 @@ import { exportEagerAsync } from '@expo/cli/build/src/export/embed/exportEager.j
 import * as Log from '@expo/cli/build/src/log.js';
 import { ensureNativeProjectAsync } from '@expo/cli/build/src/run/ensureNativeProject.js';
 import { logProjectLogsLocation } from '@expo/cli/build/src/run/hints.js';
-import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild.js';
-import type { Options } from '@expo/cli/build/src/run/ios/XcodeBuild.types.js';
 import {
   getLaunchInfoForBinaryAsync,
   launchAppAsync,
@@ -30,9 +28,8 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import Debug from 'debug';
 
-// TODO: Fork these
-// import * as XcodeBuild from './XcodeBuild';
-// import type { Options } from './XcodeBuild.types';
+import * as XcodeBuild from './XcodeBuild';
+import type { Options } from './XcodeBuild.types';
 
 const debug = Debug('expo:run:macos');
 
@@ -41,13 +38,13 @@ export async function runMacosAsync(projectRoot: string, options: Options) {
     options.configuration === 'Release' ? 'production' : 'development'
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   (require('@expo/env') as typeof ExpoEnv).load(projectRoot);
 
   assertPlatform();
 
   const install = !!options.install;
 
+  // FIXME: swap for 'macos'
   const platform = 'ios';
   if (
     (await ensureNativeProjectAsync(projectRoot, { platform, install })) &&
@@ -149,7 +146,7 @@ export async function runMacosAsync(projectRoot: string, options: Options) {
 
     // Find the path to the built app binary, this will be used to install the binary
     // on a device.
-    // eslint-disable-next-line @typescript-eslint/await-thenable
+
     binaryPath = await profile(XcodeBuild.getAppBinaryPath)(buildOutput);
   }
   debug('Binary path:', binaryPath);
@@ -215,7 +212,7 @@ export async function runMacosAsync(projectRoot: string, options: Options) {
 function assertPlatform() {
   if (process.platform !== 'darwin') {
     Log.exit(
-      chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
+      chalk`macOS apps can only be built on macOS devices. In future, you will be able to use {cyan eas build -p macos} to build in the cloud.`
     );
   }
 }

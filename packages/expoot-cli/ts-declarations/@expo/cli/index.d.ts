@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 declare module '@expo/cli/build/src/export/embed/exportEager.js' {
   export function exportEagerAsync(
     projectRoot: string,
@@ -26,6 +24,68 @@ declare module '@expo/cli/build/src/log.js' {
   export function debug(...message: string[]): void;
   export function clear(): void;
   export function exit(message: string | Error, code?: number): void;
+}
+
+declare module '@expo/cli/build/src/start/platforms/PlatformManager.js' {
+  export interface BaseResolveDeviceProps<IDevice> {
+    shouldPrompt?: boolean;
+    device?: IDevice;
+  }
+}
+
+declare module '@expo/cli/build/src/start/platforms/ios/AppleDeviceManager.js' {
+  import { DeviceManager } from '@expo/cli/build/src/start/platforms/DeviceManager.js';
+  import type { BaseResolveDeviceProps } from '@expo/cli/build/src/start/platforms/PlatformManager.js';
+  import type * as SimControl from '@expo/cli/build/src/start/platforms/ios/simctl.js';
+
+  export declare class AppleDeviceManager extends DeviceManager<SimControl.Device> {
+    static assertSystemRequirementsAsync: () => Promise<void>;
+    static async resolveAsync(
+      props: BaseResolveDeviceProps<
+        Partial<Pick<SimControl.Device, 'udid' | 'osType'>>
+      > = {}
+    ): Promise<AppleDeviceManager>;
+  }
+}
+
+declare module '@expo/cli/build/src/start/platforms/DeviceManager.js' {
+  export abstract class DeviceManager<IDevice> {
+    device: IDevice;
+
+    constructor(device: IDevice);
+
+    abstract get name(): string;
+
+    abstract get identifier(): string;
+
+    logOpeningUrl(url: string);
+
+    abstract startAsync(): Promise<IDevice>;
+
+    abstract getAppVersionAsync(
+      applicationId: string,
+      options?: { containerPath?: string }
+    ): Promise<string | null>;
+
+    abstract installAppAsync(binaryPath: string): Promise<void>;
+
+    abstract uninstallAppAsync(applicationId: string): Promise<void>;
+
+    abstract isAppInstalledAndIfSoReturnContainerPathForIOSAsync(
+      applicationId: string
+    ): Promise<boolean | string>;
+
+    abstract openUrlAsync(
+      url: string,
+      options?: { appId?: string }
+    ): Promise<void>;
+
+    abstract activateWindowAsync(): Promise<void>;
+
+    abstract ensureExpoGoAsync(sdkVersion: string): Promise<boolean>;
+
+    abstract getExpoGoAppId(): string;
+  }
 }
 
 declare module '@expo/cli/build/src/start/platforms/ios/AppleAppIdResolver.js' {
@@ -94,10 +154,27 @@ declare module '@expo/cli/build/src/start/platforms/ios/simctl.js' {
   ): Promise<SpawnResult>;
 }
 
+declare module '@expo/cli/build/src/utils/array.js' {
+  export function intersecting<T>(a: T[], b: T[]): T[];
+}
+
+declare module '@expo/cli/build/src/utils/obj.js' {
+  export function get(obj: any, key: string): any | null;
+}
+
 declare module '@expo/cli/build/src/utils/cocoapods.js' {
   export function maybePromptToSyncPodsAsync(
     projectRoot: string
   ): Promise<void>;
+}
+
+declare module '@expo/cli/build/src/utils/dir.js' {
+  export function directoryExistsAsync(file: string): Promise<boolean>;
+  export function ensureDirectory(path: string): void;
+}
+
+declare module '@expo/cli/build/src/utils/terminal.js' {
+  export function getUserTerminal(): string | undefined;
 }
 
 declare module '@expo/cli/build/src/utils/errors.js' {
@@ -120,8 +197,18 @@ declare module '@expo/cli/build/src/utils/errors.js' {
   export class UnimplementedError extends Error {}
 }
 
+declare module '@expo/cli/build/src/utils/interactive.js' {
+  export function isInteractive(): boolean;
+}
+
 declare module '@expo/cli/build/src/utils/nodeEnv.js' {
   export function setNodeEnv(mode: 'development' | 'production'): void;
+}
+
+declare module '@expo/cli/build/src/utils/ora.js' {
+  import type { Ora } from 'ora';
+
+  export function logNewSection(title: string): Ora;
 }
 
 declare module '@expo/cli/build/src/utils/port.js' {
@@ -136,6 +223,19 @@ declare module '@expo/cli/build/src/utils/profile.js' {
     fn: T,
     functionName: string = fn.name
   ): T;
+}
+
+declare module '@expo/cli/build/src/utils/prompts.js' {
+  import type { Options } from 'prompts';
+
+  type PromptOptions = { nonInteractiveHelp?: string } & Options;
+
+  export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
+
+  export function confirmAsync(
+    questions: NamelessQuestion,
+    options?: PromptOptions
+  ): Promise<boolean>;
 }
 
 declare module '@expo/cli/build/src/utils/scheme.js' {
@@ -246,6 +346,13 @@ declare module '@expo/cli/src/start/server/DevServerManager.js' {
   }
 }
 
+declare module '@expo/cli/src/utils/link.js' {
+  export function learnMore(
+    url: string,
+    options?: { learnMoreMessage?: string; dim?: boolean }
+  ): string;
+}
+
 declare module '@expo/cli/src/start/server/DevToolsPluginManager.js' {
   export const DevToolsPluginEndpoint: '/_expo/plugins';
 
@@ -267,6 +374,46 @@ declare module '@expo/cli/src/start/server/DevToolsPluginManager.js' {
   }
 
   export = DevToolsPluginManager;
+}
+
+declare module '@expo/cli/build/src/run/ios/codeSigning/Security.js' {
+  import type forge from 'node-forge';
+
+  export type CertificateSigningInfo = {
+    signingCertificateId: string;
+    codeSigningInfo?: string;
+    appleTeamName?: string;
+    appleTeamId?: string;
+  };
+  export function getSecurityPemAsync(id: string): Promise<string>;
+  export function getCertificateForSigningIdAsync(
+    id: string
+  ): Promise<forge.pki.Certificate>;
+  export function findIdentitiesAsync(): Promise<string[]>;
+  export function extractCodeSigningInfo(value: string): string | null;
+  export function resolveIdentitiesAsync(
+    identities: string[]
+  ): Promise<CertificateSigningInfo[]>;
+  export function resolveCertificateSigningInfoAsync(
+    signingCertificateId: string
+  ): Promise<CertificateSigningInfo>;
+  export function extractSigningId(codeSigningInfo: string): string | null;
+}
+
+declare module '@expo/cli/build/src/run/ios/codeSigning/resolveCertificateSigningIdentity.js' {
+  import type * as Security from '@expo/cli/build/src/run/ios/codeSigning/Security.js';
+
+  export function sortDefaultIdToBeginningAsync(
+    identities: Security.CertificateSigningInfo[]
+  ): Promise<[Security.CertificateSigningInfo[], string | null]>;
+  export function resolveCertificateSigningIdentityAsync(
+    projectRoot: string,
+    ids: string[]
+  ): Promise<Security.CertificateSigningInfo>;
+  export function selectDevelopmentTeamAsync(
+    identities: Security.CertificateSigningInfo[],
+    preferredId: string | null
+  ): Promise<Security.CertificateSigningInfo>;
 }
 
 declare module '@expo/cli/build/src/run/ios/launchApp.js' {
