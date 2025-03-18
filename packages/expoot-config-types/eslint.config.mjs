@@ -21,12 +21,21 @@ export default [
   },
   {
     rules: {
+      // https://github.com/iamturns/eslint-config-airbnb-typescript/issues/345#issuecomment-2269783683
+      'import/no-unresolved': 'off',
+
       // Common complaints in Expo source
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      'no-empty': 'off',
     },
   },
 ];

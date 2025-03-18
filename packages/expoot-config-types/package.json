@@ -1,0 +1,31 @@
+{
+  "name": "@expoot/config-types",
+  "version": "52.0.1",
+  "author": "Jamie Birch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shirakaba/expoot.git",
+    "directory": "packages/expoot-config-types"
+  },
+  "main": "src/ExpoConfig.ts",
+  "types": "src/ExpoConfig.ts",
+  "peerDependencies": {
+    "@expo/config-types": "*"
+  },
+  "devDependencies": {
+    "@expo/config-types": "^52.0.1",
+    "@tsconfig/node22": "^22.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/shirakaba/expoot/issues"
+  },
+  "description": "Expoot's wrapper around Expo Config Types",
+  "homepage": "https://github.com/shirakaba/expoot/tree/main/packages/expoot-config-types",
+  "keywords": [
+    "expoot",
+    "config",
+    "types"
+  ],
+  "license": "MIT",
+  "type": "module"
+}

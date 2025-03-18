@@ -1,0 +1,43 @@
+{
+  "name": "@expoot/config-plugins",
+  "version": "9.0.10",
+  "author": "Jamie Birch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shirakaba/expoot.git",
+    "directory": "packages/expoot-config-plugins"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@expoot/config-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@expo/config-plugins": "*",
+    "chalk": ">=4.1.2",
+    "debug": ">=4.3.5",
+    "getenv": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@expo/config-plugins": "^9.0.10",
+    "@tsconfig/node22": "^22.0.0",
+    "@types/debug": "^4.1.12",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.13.10",
+    "chalk": "^4.1.2",
+    "debug": "^4.3.5",
+    "getenv": ">=1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/shirakaba/expoot/issues"
+  },
+  "description": "Expoot's wrapper around Expo Config Plugins",
+  "homepage": "https://github.com/shirakaba/expoot/tree/main/packages/expoot-config-plugins",
+  "keywords": [
+    "expoot",
+    "config",
+    "plugins"
+  ],
+  "license": "MIT",
+  "type": "module"
+}

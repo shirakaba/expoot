@@ -5,9 +5,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/shirakaba/expoot.git",
-    "directory": "packages/cli"
+    "directory": "packages/expoot-cli"
   },
   "main": "bin.mjs",
+  "dependencies": {
+    "@expoot/config-plugins": "workspace:*"
+  },
   "peerDependencies": {
     "@expo/cli": "*",
     "chalk": ">=4.0.0",
@@ -31,7 +34,7 @@
     "url": "https://github.com/shirakaba/expoot/issues"
   },
   "description": "Expoot's wrapper around the Expo CLI",
-  "homepage": "https://github.com/shirakaba/expoot/tree/main/packages/cli",
+  "homepage": "https://github.com/shirakaba/expoot/tree/main/packages/expoot-cli",
   "keywords": [
     "expoot",
     "cli"
