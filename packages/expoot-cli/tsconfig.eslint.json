@@ -6,5 +6,5 @@
     "noEmit": true,
     "allowJs": true
   },
-  "include": ["src", "eslint.config.mjs", "bin.mjs"]
+  "include": ["src", "eslint.config.mjs", "bin.mjs", "ts-declarations"]
 }

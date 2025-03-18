@@ -5,6 +5,7 @@
       "name": "expoot",
       "devDependencies": {
         "@eslint/js": "^9.22.0",
+        "@types/debug": "^4.1.12",
         "@typescript-eslint/eslint-plugin": "^8.26.1",
         "eslint": "^9.22.0",
         "eslint-config-prettier": "^10.1.1",
@@ -19,7 +20,7 @@
         "typescript-eslint": "^8.26.1",
       },
     },
-    "packages/cli": {
+    "packages/expoot-cli": {
       "name": "@expoot/cli",
       "version": "0.21.8",
       "bin": {
@@ -138,7 +139,7 @@
 
     "@expo/xcpretty": ["@expo/xcpretty@4.3.2", "", { "dependencies": { "@babel/code-frame": "7.10.4", "chalk": "^4.1.0", "find-up": "^5.0.0", "js-yaml": "^4.1.0" }, "bin": { "excpretty": "build/cli.js" } }, "sha512-ReZxZ8pdnoI3tP/dNnJdnmAk7uLT4FjsKDGW7YeDdvdOMz2XCQSmSCM9IWlrXuWtMF9zeSB6WJtEhCQ41gQOfw=="],
 
-    "@expoot/cli": ["@expoot/cli@workspace:packages/cli"],
+    "@expoot/cli": ["@expoot/cli@workspace:packages/expoot-cli"],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 

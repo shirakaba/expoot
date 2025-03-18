@@ -2,8 +2,9 @@ import { argv, exit } from 'node:process';
 import { parseArgs } from 'node:util';
 
 import expoPackageJson from '@expo/cli/package.json' with { type: 'json' };
-import expootPackageJson from '@expoot/cli/package.json' with { type: 'json' };
 import chalk from 'chalk';
+
+import expootPackageJson from '../package.json' with { type: 'json' };
 
 import { spawnExpoCli } from './spawn-expo-cli.ts';
 
