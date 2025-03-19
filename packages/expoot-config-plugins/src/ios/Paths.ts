@@ -33,6 +33,7 @@ export function getAppDelegateHeaderFilePath(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   );
 
@@ -64,6 +65,7 @@ export function getAppDelegateFilePath(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   );
 
@@ -95,6 +97,7 @@ export function getAppDelegateObjcHeaderFilePath(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   );
 
@@ -126,6 +129,7 @@ export function getPodfilePath(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   );
 
@@ -222,6 +226,7 @@ export function getAllXcodeProjectPaths(
     globSync(`${platform}/**/*.xcodeproj`, {
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
       // Drop leading `/` from glob results to mimick glob@<9 behavior
       .map((filePath) => filePath.replace(/^\//, ''))
@@ -319,6 +324,7 @@ export function getAllInfoPlistPaths(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   ).sort(
     // longer name means more suffixes, we want the shortest possible one to be first.
@@ -360,6 +366,7 @@ export function getAllEntitlementsPaths(
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths,
+    fs,
   });
   return paths;
 }
