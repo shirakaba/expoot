@@ -193,6 +193,7 @@ export function findSchemePaths(
   projectRoot: string,
   platform: ModPlatform
 ): string[] {
+  console.log(`findSchemePaths("${projectRoot}", "${platform}")`);
   return withSortedGlobResult(
     globSync(`${platform}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme`, {
       absolute: true,
@@ -206,6 +207,7 @@ export function findSchemeNames(
   projectRoot: string,
   platform: ModPlatform
 ): string[] {
+  console.log(`findSchemeNames("${projectRoot}", "${platform}")`);
   const schemePaths = findSchemePaths(projectRoot, platform);
   return schemePaths.map((schemePath) => path.parse(schemePath).name);
 }
@@ -254,6 +256,7 @@ export function getXcodeProjectPath(
   projectRoot: string,
   platform: ModPlatform
 ): string {
+  console.log(`getXcodeProjectPath("${projectRoot}", "${platform}")`);
   const [using, ...extra] = getAllXcodeProjectPaths(projectRoot, platform);
 
   if (extra.length) {

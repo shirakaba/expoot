@@ -2,6 +2,9 @@
   "name": "@expoot/config-plugins",
   "version": "9.0.10",
   "author": "Jamie Birch",
+  "scripts": {
+    "test": "vitest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/shirakaba/expoot.git",
@@ -24,9 +27,12 @@
     "@types/debug": "^4.1.12",
     "@types/getenv": "^1.0.0",
     "@types/node": "^22.13.10",
+    "@vitest/eslint-plugin": "^1.1.38",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
-    "getenv": ">=1.0.0"
+    "getenv": ">=1.0.0",
+    "memfs": "^4.17.0",
+    "vitest": "^3.0.9"
   },
   "bugs": {
     "url": "https://github.com/shirakaba/expoot/issues"

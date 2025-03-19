@@ -1,3 +1,5 @@
+import vitest from '@vitest/eslint-plugin';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 import baseConfig from '../../eslint.config.mjs';
@@ -36,6 +38,26 @@ export default [
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       'no-empty': 'off',
+    },
+  },
+  {
+    files: ['__mocks__/**/*.cjs'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    files: ['vitest.setup.ts', '**/__tests__/**'],
+    plugins: { vitest },
+    languageOptions: {
+      globals: {
+        ...vitest.environments.env.globals,
+      },
+    },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      'vitest/valid-title': 'off',
     },
   },
 ];
