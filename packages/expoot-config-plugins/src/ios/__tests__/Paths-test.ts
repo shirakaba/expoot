@@ -4,10 +4,10 @@ import type FS from 'node:fs';
 import * as path from 'path';
 
 import { UnexpectedError } from '@expo/config-plugins/build/utils/errors';
+import * as WarningAggregator from '@expo/config-plugins/build/utils/warnings';
 import { vol } from 'memfs';
 
 import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
-import * as WarningAggregator from '../../utils/warnings';
 
 import {
   findSchemeNames,
@@ -17,7 +17,7 @@ import {
   getPodfilePath,
 } from '../Paths';
 
-vi.mock('../../utils/warnings');
+vi.mock('@expo/config-plugins/build/utils/warnings');
 
 const fsActual: typeof FS = await vi.importActual('node:fs');
 const rnFixture = readAllFiles(fsActual);
@@ -151,6 +151,7 @@ describe(getXcodeProjectPath, () => {
     );
   });
 
+  // eslint-disable-next-line vitest/no-identical-title
   it('warns when multiple paths are found', () => {
     vol.fromJSON(
       {
