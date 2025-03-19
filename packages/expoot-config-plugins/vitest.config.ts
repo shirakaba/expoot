@@ -18,13 +18,17 @@ export default defineConfig({
     clearMocks: true,
     globals: true,
     silent: false,
+    // server: {
+    //   deps: {
+    //     inline: ['@expo/config-plugins', 'glob'],
+    //   },
+    // },
     deps: {
-      moduleDirectories: [
-        'node_modules',
-        packages,
-        rootNodeModules,
-        workspaceNodeModules,
-      ],
+      inline: ['@expo/config-plugins', 'glob'],
+      moduleDirectories: [packages, rootNodeModules, workspaceNodeModules],
+      // moduleDirectories: [packages, rootNodeModules, workspaceNodeModules].map(
+      //   (x) => path.relative(workspace, x)
+      // ),
     },
   },
 });

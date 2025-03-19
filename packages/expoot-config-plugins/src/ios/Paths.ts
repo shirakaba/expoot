@@ -1,5 +1,6 @@
-import { existsSync, readFileSync } from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import * as path from 'node:path';
 
 import { UnexpectedError } from '@expo/config-plugins/build/utils/errors';
 import { withSortedGlobResult } from '@expo/config-plugins/build/utils/glob';
@@ -199,6 +200,7 @@ export function findSchemePaths(
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
+      fs,
     })
   );
 }

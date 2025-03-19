@@ -33,6 +33,7 @@ if (workaround) {
 } else {
   vi.mock('node:fs');
   vi.mock('node:fs/promises');
+  // vi.mock('glob');
 }
 
 vi.mock('../../utils/warnings');
