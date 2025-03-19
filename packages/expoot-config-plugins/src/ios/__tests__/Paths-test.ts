@@ -1,6 +1,5 @@
 import '../../../_mocks/fs.js';
 
-/* eslint-disable @typescript-eslint/no-require-imports */
 import type FS from 'node:fs';
 import * as path from 'path';
 
@@ -18,26 +17,6 @@ import {
   getPodfilePath,
 } from '../Paths';
 
-// const fsMock = require('../../__mocks__/fs.cjs');
-
-// Tell Vitest to use the node:fs mock from the __mocks__ folder.
-// (this can be done in a setup file if fs should always be mocked)
-
-// const workaround = false;
-
-// if (workaround) {
-//   vi.mock('node:fs', () => require('../../../__mocks__/fs.cjs'));
-//   vi.mock('node:fs/promises', () =>
-//     require('../../../__mocks__/fs/promises.cjs')
-//   );
-//   vi.mock('fs', () => require('../../../__mocks__/fs.cjs'));
-//   vi.mock('fs/promises', () => require('../../../__mocks__/fs/promises.cjs'));
-// } else {
-//   vi.mock('node:fs');
-//   vi.mock('node:fs/promises');
-//   // vi.mock('glob');
-// }
-
 vi.mock('../../utils/warnings');
 
 const fsActual: typeof FS = await vi.importActual('node:fs');
@@ -50,7 +29,7 @@ describe(findSchemeNames, () => {
     vol.reset();
   });
 
-  it.only('returns project path', () => {
+  it('returns project path', () => {
     vol.fromJSON(
       {
         'ios/my-app.xcodeproj/xcshareddata/xcschemes/my-app.xcscheme': '',

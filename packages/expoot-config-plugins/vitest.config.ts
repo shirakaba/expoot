@@ -12,20 +12,13 @@ export default defineConfig({
   test: {
     root: workspace,
     name: '@expoot/config-plugins',
-    // include: ['**/__tests__/*@(test|spec).?(c|m)[jt]s?(x)'],
-    include: ['src/ios/__tests__/Paths-test.ts'],
+    include: ['**/__tests__/*@(test|spec).?(c|m)[jt]s?(x)'],
     setupFiles: ['vitest.setup.ts'],
     clearMocks: true,
     globals: true,
     silent: false,
-    server: {
-      deps: {
-        inline: ['@expo/config-plugins', 'glob'],
-      },
-    },
     deps: {
       inline: ['@expo/config-plugins', 'glob'],
-      // moduleDirectories: [packages, rootNodeModules, workspaceNodeModules],
       moduleDirectories: [packages, rootNodeModules, workspaceNodeModules].map(
         (x) => path.relative(workspace, x)
       ),
