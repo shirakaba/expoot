@@ -1,29 +1,48 @@
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
+import { appendScheme } from '@expo/config-plugins/build/ios/Scheme';
 import { vol } from 'memfs';
-import path from 'path';
 
 import {
   getGoogleServicesFile,
   getGoogleSignInReversedClientId,
   setGoogleSignInReversedClientId,
 } from '../Google';
-import { appendScheme } from '../Scheme';
 
-jest.mock('fs');
-jest.mock('../Scheme', () => ({
-  appendScheme: jest.fn((...props) => jest.requireActual('../Scheme').appendScheme(...props)),
-}));
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const actualScheme = await vi.importActual(
+  '@expo/config-plugins/build/ios/Scheme'
+);
 
-const googleServicesFixture = jest
-  .requireActual('fs')
-  .readFileSync(path.join(__dirname, 'fixtures/GoogleService-Info.plist'), 'utf-8');
+vi.mock(
+  import('@expo/config-plugins/build/ios/Scheme'),
+  async (importOriginal) => {
+    const mod = await importOriginal();
+
+    return {
+      ...mod,
+      appendScheme: vi.fn<typeof appendScheme>((...props) => {
+        return (actualScheme.appendScheme as typeof appendScheme)(...props);
+      }),
+    };
+  }
+);
+
+const googleServicesFixture = fsActual.readFileSync(
+  path.join(__dirname, 'fixtures/GoogleService-Info.plist'),
+  'utf-8'
+);
 
 describe(getGoogleSignInReversedClientId, () => {
   afterEach(() => vol.reset());
-  it(`returns null when no file is defined`, () => {
+  it('returns null when no file is defined', () => {
     expect(getGoogleSignInReversedClientId({}, { projectRoot: '' })).toBe(null);
     expect(getGoogleServicesFile({})).toBe(null);
   });
-  it(`returns the REVERSED_CLIENT_ID from the linked file`, () => {
+  it('returns the REVERSED_CLIENT_ID from the linked file', () => {
     vol.fromJSON(
       {
         'path/to/GoogleService-Info.plist': googleServicesFixture,
@@ -35,7 +54,9 @@ describe(getGoogleSignInReversedClientId, () => {
       ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
     };
 
-    expect(getGoogleServicesFile(config)).toBe('./path/to/GoogleService-Info.plist');
+    expect(getGoogleServicesFile(config)).toBe(
+      './path/to/GoogleService-Info.plist'
+    );
     expect(getGoogleSignInReversedClientId(config, { projectRoot: '/' })).toBe(
       'com.googleusercontent.apps.1234567890123-abcdef'
     );
@@ -45,7 +66,7 @@ describe(getGoogleSignInReversedClientId, () => {
 describe(setGoogleSignInReversedClientId, () => {
   afterEach(() => vol.reset());
 
-  it(`adds the reversed client id to scheme from GoogleService-Info.Plist`, () => {
+  it('adds the reversed client id to scheme from GoogleService-Info.Plist', () => {
     vol.fromJSON(
       {
         'path/to/GoogleService-Info.plist': googleServicesFixture,
@@ -63,7 +84,11 @@ describe(setGoogleSignInReversedClientId, () => {
       )
     ).toEqual({
       CFBundleURLTypes: [
-        { CFBundleURLSchemes: ['com.googleusercontent.apps.1234567890123-abcdef'] },
+        {
+          CFBundleURLSchemes: [
+            'com.googleusercontent.apps.1234567890123-abcdef',
+          ],
+        },
       ],
     });
 
