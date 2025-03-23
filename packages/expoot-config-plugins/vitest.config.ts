@@ -15,7 +15,10 @@ export default defineConfig({
       filter(id) {
         // `node_modules` is exclude by default, so we need to include it explicitly
         // https://github.com/vite-plugin/vite-plugin-commonjs/blob/v0.7.0/src/index.ts#L125-L127
-        if (id.includes('node_modules/xcode')) {
+        if (
+          id.includes('node_modules/xcode') ||
+          id.includes('node_modules/@expo/config-plugins')
+        ) {
           return true;
         }
       },

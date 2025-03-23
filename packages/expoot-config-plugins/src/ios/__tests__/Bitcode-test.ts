@@ -1,16 +1,21 @@
-import * as fs from 'node:fs';
+import '../../../_mocks/fs.js';
 
+import * as fs from 'node:fs';
+import type FS from 'node:fs';
+
+import { setBitcodeWithConfig } from '@expo/config-plugins/build/ios/Bitcode';
+import * as WarningAggregator from '@expo/config-plugins/build/utils/warnings';
 import { vol } from 'memfs';
 
-import { XcodeProject } from '../../Plugin.types';
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
-import * as WarningAggregator from '../../utils/warnings';
+import type { ModPlatform, XcodeProject } from '../../Plugin.types';
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
 
-import { setBitcodeWithConfig } from '../Bitcode';
 import { getPbxproj, isNotComment } from '../utils/Xcodeproj';
 
-// jest.mock('fs');
-vi.mock('../../utils/warnings');
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsActual);
+
+vi.mock('@expo/config-plugins/build/utils/warnings');
 
 describe(setBitcodeWithConfig, () => {
   const projectRoot = '/tablet';
@@ -31,6 +36,7 @@ describe(setBitcodeWithConfig, () => {
     vol.reset();
   });
 
+  // eslint-disable-next-line vitest/expect-expect
   it('defaults to not modifying the bitcode settings', async () => {
     setBitcodeEnabledForRoot(
       { ios: {} },
@@ -108,7 +114,7 @@ function getConfigurations(project: XcodeProject) {
 function setBitcodeEnabledForRoot(
   config: { ios?: { bitcode?: boolean | string } & any },
   projectRoot: string,
-  platform: string,
+  platform: ModPlatform,
   validate: (project: XcodeProject) => void
 ) {
   let project = getPbxproj(projectRoot, platform);
