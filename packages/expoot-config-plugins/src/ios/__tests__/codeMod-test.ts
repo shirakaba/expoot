@@ -6,7 +6,7 @@ import {
   insertContentsInsideObjcInterfaceBlock,
   insertContentsInsideSwiftClassBlock,
   insertContentsInsideSwiftFunctionBlock,
-} from '../codeMod';
+} from '@expo/config-plugins/build/ios/codeMod';
 
 describe(findObjcInterfaceCodeBlock, () => {
   it('should find class interface', () => {
@@ -94,11 +94,13 @@ describe(findObjcInterfaceCodeBlock, () => {
 
 @end`;
 
-    expect(findObjcInterfaceCodeBlock(contents, '@implementation Foo')).toEqual({
-      start: 85,
-      end: 144,
-      code: expectContents,
-    });
+    expect(findObjcInterfaceCodeBlock(contents, '@implementation Foo')).toEqual(
+      {
+        start: 85,
+        end: 144,
+        code: expectContents,
+      }
+    );
   });
 
   it('should returns null if not found', () => {
@@ -330,10 +332,16 @@ class Foo: NSObject {
   }
 }
 `;
-    expect(findSwiftFunctionCodeBlock(contents, 'doSomething(_:withValue:)')).toEqual({
+    expect(
+      findSwiftFunctionCodeBlock(contents, 'doSomething(_:withValue:)')
+    ).toEqual({
       start: 203,
       end: 253,
-      code: ['{', '    print("Hello \\(name) - value[\\(value)]!")', '  }'].join('\n'),
+      code: [
+        '{',
+        '    print("Hello \\(name) - value[\\(value)]!")',
+        '  }',
+      ].join('\n'),
     });
   });
 });
@@ -359,9 +367,14 @@ class Foo: NSObject {
 }`;
 
     expect(
-      insertContentsInsideSwiftClassBlock(contents, 'class Foo', '\n  var Value: String?\n', {
-        position: 'head',
-      })
+      insertContentsInsideSwiftClassBlock(
+        contents,
+        'class Foo',
+        '\n  var Value: String?\n',
+        {
+          position: 'head',
+        }
+      )
     ).toEqual(expectContents);
   });
 });
