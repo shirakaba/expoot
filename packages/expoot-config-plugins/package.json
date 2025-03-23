@@ -33,6 +33,7 @@
     "getenv": ">=1.0.0",
     "glob": "^10.4.2",
     "memfs": "^4.17.0",
+    "vite-plugin-commonjs": "^0.10.4",
     "vitest": "^3.0.9"
   },
   "bugs": {
