@@ -1,7 +1,7 @@
 import '../../../_mocks/fs.js';
 
 import type FS from 'node:fs';
-import * as path from 'path';
+import * as path from 'node:path';
 
 import { UnexpectedError } from '@expo/config-plugins/build/utils/errors';
 import * as WarningAggregator from '@expo/config-plugins/build/utils/warnings';

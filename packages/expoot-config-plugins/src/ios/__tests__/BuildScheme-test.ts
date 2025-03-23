@@ -1,6 +1,9 @@
-import fs from 'fs';
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
 import { vol } from 'memfs';
-import path from 'path';
 
 import {
   getApplicationTargetNameForSchemeAsync,
@@ -8,9 +11,8 @@ import {
   getRunnableSchemesFromXcodeproj,
 } from '../BuildScheme';
 
-const fsReal = jest.requireActual('fs') as typeof fs;
-
-jest.mock('fs');
+const fsReal: typeof FS = await vi.importActual('node:fs');
+const __dirname = import.meta.dirname;
 
 describe(getRunnableSchemesFromXcodeproj, () => {
   const platform = 'ios';
@@ -30,11 +32,19 @@ describe(getRunnableSchemesFromXcodeproj, () => {
   afterAll(() => {
     vol.reset();
   });
-  it(`parses for runnable schemes`, async () => {
+  it('parses for runnable schemes', async () => {
     const schemes = getRunnableSchemesFromXcodeproj('/app', platform);
     expect(schemes).toStrictEqual([
-      { name: 'multitarget', osType: 'iOS', type: 'com.apple.product-type.application' },
-      { name: 'shareextension', osType: 'iOS', type: 'com.apple.product-type.app-extension' },
+      {
+        name: 'multitarget',
+        osType: 'iOS',
+        type: 'com.apple.product-type.application',
+      },
+      {
+        name: 'shareextension',
+        osType: 'iOS',
+        type: 'com.apple.product-type.app-extension',
+      },
     ]);
   });
 });
@@ -47,7 +57,10 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
       vol.fromJSON(
         {
           'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
-            fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject.xcscheme'), 'utf-8'),
+            fsReal.readFileSync(
+              path.join(__dirname, 'fixtures/testproject.xcscheme'),
+              'utf-8'
+            ),
         },
         '/app'
       );
@@ -58,13 +71,21 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
     });
 
     it('returns the target name for existing scheme', async () => {
-      const target = await getApplicationTargetNameForSchemeAsync('/app', platform, 'testproject');
+      const target = await getApplicationTargetNameForSchemeAsync(
+        '/app',
+        platform,
+        'testproject'
+      );
       expect(target).toBe('testproject');
     });
 
     it('throws if the scheme does not exist', async () => {
       await expect(() =>
-        getApplicationTargetNameForSchemeAsync('/app', platform, 'nonexistentscheme')
+        getApplicationTargetNameForSchemeAsync(
+          '/app',
+          platform,
+          'nonexistentscheme'
+        )
       ).rejects.toThrow(/does not exist/);
     });
   });
@@ -73,7 +94,10 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
       vol.fromJSON(
         {
           'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
-            fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject-2.xcscheme'), 'utf-8'),
+            fsReal.readFileSync(
+              path.join(__dirname, 'fixtures/testproject-2.xcscheme'),
+              'utf-8'
+            ),
         },
         '/app'
       );
@@ -84,13 +108,21 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
     });
 
     it('returns the target name for existing scheme', async () => {
-      const target = await getApplicationTargetNameForSchemeAsync('/app', platform, 'testproject');
+      const target = await getApplicationTargetNameForSchemeAsync(
+        '/app',
+        platform,
+        'testproject'
+      );
       expect(target).toBe('testproject');
     });
 
     it('throws if the scheme does not exist', async () => {
       await expect(() =>
-        getApplicationTargetNameForSchemeAsync('/app', platform, 'nonexistentscheme')
+        getApplicationTargetNameForSchemeAsync(
+          '/app',
+          platform,
+          'nonexistentscheme'
+        )
       ).rejects.toThrow(/does not exist/);
     });
   });
@@ -103,7 +135,10 @@ describe(getArchiveBuildConfigurationForSchemeAsync, () => {
     vol.fromJSON(
       {
         'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
-          fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject.xcscheme'), 'utf-8'),
+          fsReal.readFileSync(
+            path.join(__dirname, 'fixtures/testproject.xcscheme'),
+            'utf-8'
+          ),
       },
       '/app'
     );
@@ -124,7 +159,11 @@ describe(getArchiveBuildConfigurationForSchemeAsync, () => {
 
   it('throws if the scheme does not exist', async () => {
     await expect(() =>
-      getArchiveBuildConfigurationForSchemeAsync('/app', platform, 'nonexistentscheme')
+      getArchiveBuildConfigurationForSchemeAsync(
+        '/app',
+        platform,
+        'nonexistentscheme'
+      )
     ).rejects.toThrow(/does not exist/);
   });
 });

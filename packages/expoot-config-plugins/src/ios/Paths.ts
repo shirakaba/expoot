@@ -198,7 +198,6 @@ export function findSchemePaths(
   projectRoot: string,
   platform: ModPlatform
 ): string[] {
-  console.log(`findSchemePaths("${projectRoot}", "${platform}")`);
   return withSortedGlobResult(
     globSync(`${platform}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme`, {
       absolute: true,
