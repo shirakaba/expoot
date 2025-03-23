@@ -11,9 +11,7 @@ import type {
 // jest.mock('../../plugins/android-plugins');
 
 export function mockModWithResults(withMod: MockInstance, modResults: any) {
-  console.log('mocking', withMod);
   withMod.mockImplementationOnce((config: any, action: any) => {
-    console.log('!! MOCKED');
     return action({ ...config, modResults });
   });
 }

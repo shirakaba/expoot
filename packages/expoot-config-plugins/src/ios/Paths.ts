@@ -212,7 +212,6 @@ export function findSchemeNames(
   projectRoot: string,
   platform: ModPlatform
 ): string[] {
-  console.log(`findSchemeNames("${projectRoot}", "${platform}")`);
   const schemePaths = findSchemePaths(projectRoot, platform);
   return schemePaths.map((schemePath) => path.parse(schemePath).name);
 }
@@ -262,7 +261,6 @@ export function getXcodeProjectPath(
   projectRoot: string,
   platform: ModPlatform
 ): string {
-  console.log(`getXcodeProjectPath("${projectRoot}", "${platform}")`);
   const [using, ...extra] = getAllXcodeProjectPaths(projectRoot, platform);
 
   if (extra.length) {
