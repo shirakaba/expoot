@@ -17,7 +17,8 @@ export default defineConfig({
         // https://github.com/vite-plugin/vite-plugin-commonjs/blob/v0.7.0/src/index.ts#L125-L127
         if (
           id.includes('node_modules/xcode') ||
-          id.includes('node_modules/@expo/config-plugins')
+          id.includes('node_modules/@expo/config-plugins') ||
+          id.includes('node_modules/@expo/json-file')
         ) {
           return true;
         }
@@ -34,7 +35,7 @@ export default defineConfig({
     silent: false,
     server: {
       deps: {
-        inline: ['@expo/config-plugins', 'glob', 'xcode'],
+        inline: ['@expo/config-plugins', '@expo/json-file', 'glob', 'xcode'],
         moduleDirectories: [
           packages,
           rootNodeModules,

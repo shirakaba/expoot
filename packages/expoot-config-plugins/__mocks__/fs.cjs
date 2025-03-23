@@ -4,7 +4,7 @@ const { fs } = require('memfs');
 console.log('mocking fs with memfs');
 
 module.exports = new Proxy(fs, {
-  get(target, prop, _receiver) {
+  get(_target, prop, _receiver) {
     console.trace(`mock get "${prop.toString()}"`);
     return Reflect.get(...arguments);
   },
