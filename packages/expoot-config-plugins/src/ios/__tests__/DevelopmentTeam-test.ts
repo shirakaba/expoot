@@ -1,25 +1,28 @@
-import path from 'path';
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
 
 import type { ExpoConfig } from '@expoot/config-types';
 import { fs as memfs, vol } from 'memfs';
 
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
 
 import {
   getDevelopmentTeam,
   setDevelopmentTeamForPbxproj,
 } from '../DevelopmentTeam';
 
-const fs = jest.requireActual('fs') as typeof import('fs');
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsActual);
+const __dirname = import.meta.dirname;
+
 const baseExpoConfig: ExpoConfig = {
   name: 'testproject',
   slug: 'testproject',
   platforms: ['ios'],
   version: '1.0.0',
 };
-
-jest.mock('fs');
-jest.mock('node:fs', () => require('memfs').fs);
 
 describe('DevelopmentTeam module', () => {
   const platform = 'ios';
@@ -67,7 +70,7 @@ describe('DevelopmentTeam module', () => {
     });
 
     it('removes the `DEVELOPMENT_TEAM` from all build configurations without team id', () => {
-      const fixtureWithDevelopmentTeam = fs.readFileSync(
+      const fixtureWithDevelopmentTeam = fsActual.readFileSync(
         path.join(__dirname, 'fixtures/project-multitarget.pbxproj'),
         'utf-8'
       );

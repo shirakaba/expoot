@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 import { trimQuotes } from '@expo/config-plugins/build/ios/utils/string';
 import { withXcodeProject } from '@expo/config-plugins/build/plugins/ios-plugins';
+import type { ExpoConfig as UpstreamExpoConfig } from '@expo/config-types';
 import type { ExpoConfig } from '@expoot/config-types';
 import xcode, { type XCBuildConfiguration } from 'xcode';
 
@@ -17,7 +18,7 @@ import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 export const withDevelopmentTeam: ConfigPlugin<
   { appleTeamId?: string } | void
 > = (config, { appleTeamId } = {}) => {
-  return withXcodeProject(config, (config) => {
+  return withXcodeProject(config as UpstreamExpoConfig, (config) => {
     const teamId = appleTeamId ?? getDevelopmentTeam(config);
     if (teamId) {
       config.modResults = updateDevelopmentTeamForPbxproj(
