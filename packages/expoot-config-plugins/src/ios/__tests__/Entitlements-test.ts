@@ -1,17 +1,21 @@
-import plist from '@expo/plist';
-import * as fs from 'fs';
-import { vol } from 'memfs';
-import * as path from 'path';
+import '../../../_mocks/fs.js';
 
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import type FS from 'node:fs';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import plist from '@expo/plist';
+import { vol } from 'memfs';
+
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
+
 import {
   ensureApplicationTargetEntitlementsFileConfigured,
   getEntitlementsPath,
 } from '../Entitlements';
 
-const fsReal = jest.requireActual('fs') as typeof fs;
-
-jest.mock('fs');
+const fsReal: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsReal);
 
 const exampleEntitlements = `<?xml version="0.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -36,10 +40,14 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     ensureApplicationTargetEntitlementsFileConfigured(projectRoot, platform);
     const entitlementsPath = getEntitlementsPath(projectRoot, platform);
     expect(entitlementsPathBefore).toBeNull();
-    expect(entitlementsPath).toBe('/app/ios/HelloWorld/HelloWorld.entitlements');
+    expect(entitlementsPath).toBe(
+      '/app/ios/HelloWorld/HelloWorld.entitlements'
+    );
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath!, 'utf8'));
+    const data = plist.parse(
+      await fs.promises.readFile(entitlementsPath!, 'utf8')
+    );
     expect(data).toStrictEqual({
       // No entitlements enabled by default
     });
@@ -58,10 +66,14 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     );
     ensureApplicationTargetEntitlementsFileConfigured(projectRoot, platform);
     const entitlementsPath = getEntitlementsPath(projectRoot, platform);
-    expect(entitlementsPath).toBe('/app/ios/testproject/testproject.entitlements');
+    expect(entitlementsPath).toBe(
+      '/app/ios/testproject/testproject.entitlements'
+    );
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath, 'utf8'));
+    const data = plist.parse(
+      await fs.promises.readFile(entitlementsPath!, 'utf8')
+    );
     expect(data).toStrictEqual({});
   });
 
@@ -82,11 +94,15 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     expect(entitlementsPath).toBe('/app/ios/testapp/example.entitlements');
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath, 'utf8'));
+    const data = plist.parse(
+      await fs.promises.readFile(entitlementsPath!, 'utf8')
+    );
     expect(data).toStrictEqual({ special: true });
 
     // entitlement file in default location does not exist
-    expect(fs.existsSync('/app/ios/testproject/testproject.entitlements')).toBe(false);
+    expect(fs.existsSync('/app/ios/testproject/testproject.entitlements')).toBe(
+      false
+    );
   });
 });
 
