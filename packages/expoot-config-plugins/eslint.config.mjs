@@ -37,6 +37,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
       'no-empty': 'off',
     },
   },

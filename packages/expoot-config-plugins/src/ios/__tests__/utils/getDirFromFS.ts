@@ -1,7 +1,10 @@
-export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
+export function getDirFromFS(
+  fsJSON: Record<string, string | null>,
+  rootDir: string
+) {
   return Object.entries(fsJSON)
     .filter(([path, value]) => value !== null && path.startsWith(rootDir))
-    .reduce<Record<string, string>>(
+    .reduce<Record<string, string | null>>(
       (acc, [path, fileContent]) => ({
         ...acc,
         [path.substring(rootDir.length).startsWith('/')

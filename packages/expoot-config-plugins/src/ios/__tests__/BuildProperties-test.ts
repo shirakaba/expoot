@@ -1,12 +1,23 @@
-import { compileMockModWithResultsAsync } from '../../plugins/__tests__/mockMods';
-import { withPodfileProperties } from '../../plugins/ios-plugins';
+import '../../../_mocks/fs.js';
+
 import {
   updateIosBuildPropertiesFromConfig,
   updateIosBuildProperty,
   withJsEnginePodfileProps,
-} from '../BuildProperties';
+} from '@expo/config-plugins/build/ios/BuildProperties';
+import type * as BuildProperties from '@expo/config-plugins/build/ios/BuildProperties';
+import { withPodfileProperties } from '@expo/config-plugins/build/plugins/ios-plugins';
+import type { MockInstance } from 'vitest';
 
-jest.mock('../../plugins/ios-plugins');
+import type { ConfigPlugin, Mod } from '../../Plugin.types';
+import { compileMockModWithResultsAsync } from '../../plugins/__tests__/mockMods';
+
+vi.mock('@expo/config-plugins/build/plugins/ios-plugins');
+vi.mock('@expo/config-plugins/build/ios/BuildProperties');
+
+const BuildPropertiesActual: typeof BuildProperties = await vi.importActual(
+  '@expo/config-plugins/build/ios/BuildProperties'
+);
 
 describe(withJsEnginePodfileProps, () => {
   const JS_ENGINE_PROP_KEY = 'expo.jsEngine';
@@ -15,8 +26,11 @@ describe(withJsEnginePodfileProps, () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { jsEngine: 'hermes' },
       {
-        plugin: withJsEnginePodfileProps,
-        mod: withPodfileProperties,
+        plugin:
+          BuildPropertiesActual.withJsEnginePodfileProps as unknown as ConfigPlugin<void>,
+        mod: withPodfileProperties as unknown as MockInstance<
+          ConfigPlugin<Mod<{}>>
+        >,
         modResults: {},
       }
     );
@@ -29,8 +43,11 @@ describe(withJsEnginePodfileProps, () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { jsEngine: 'hermes', ios: { jsEngine: 'jsc' } },
       {
-        plugin: withJsEnginePodfileProps,
-        mod: withPodfileProperties,
+        plugin:
+          BuildPropertiesActual.withJsEnginePodfileProps as unknown as ConfigPlugin<void>,
+        mod: withPodfileProperties as unknown as MockInstance<
+          ConfigPlugin<Mod<{}>>
+        >,
         modResults: {},
       }
     );
@@ -43,8 +60,11 @@ describe(withJsEnginePodfileProps, () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { jsEngine: 'hermes' },
       {
-        plugin: withJsEnginePodfileProps,
-        mod: withPodfileProperties,
+        plugin:
+          BuildPropertiesActual.withJsEnginePodfileProps as unknown as ConfigPlugin<void>,
+        mod: withPodfileProperties as unknown as MockInstance<
+          ConfigPlugin<Mod<{}>>
+        >,
         modResults: { [JS_ENGINE_PROP_KEY]: 'jsc' } as Record<string, string>,
       }
     );
@@ -60,12 +80,13 @@ describe(updateIosBuildPropertiesFromConfig, () => {
     const configToPropertyRules = [
       {
         propName: 'expo.jsEngine',
-        propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
+        propValueGetter: (config: any) =>
+          config.ios?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
       },
     ];
 
     expect(
-      updateIosBuildPropertiesFromConfig(
+      BuildPropertiesActual.updateIosBuildPropertiesFromConfig(
         { jsEngine: 'hermes', ios: { jsEngine: 'jsc' } },
         podfileProperties,
         configToPropertyRules
@@ -75,7 +96,7 @@ describe(updateIosBuildPropertiesFromConfig, () => {
     });
 
     expect(
-      updateIosBuildPropertiesFromConfig(
+      BuildPropertiesActual.updateIosBuildPropertiesFromConfig(
         { jsEngine: 'jsc' },
         podfileProperties,
         configToPropertyRules
@@ -85,7 +106,11 @@ describe(updateIosBuildPropertiesFromConfig, () => {
     });
 
     expect(
-      updateIosBuildPropertiesFromConfig({}, podfileProperties, configToPropertyRules)
+      BuildPropertiesActual.updateIosBuildPropertiesFromConfig(
+        {},
+        podfileProperties,
+        configToPropertyRules
+      )
     ).toMatchObject({
       'expo.jsEngine': 'NOTFOUND',
     });
@@ -99,7 +124,13 @@ describe(updateIosBuildProperty, () => {
       bar: 'bar',
       name: 'oldName',
     };
-    expect(updateIosBuildProperty(podfileProperties, 'name', 'newName')).toEqual({
+    expect(
+      BuildPropertiesActual.updateIosBuildProperty(
+        podfileProperties,
+        'name',
+        'newName'
+      )
+    ).toEqual({
       foo: 'foo',
       bar: 'bar',
       name: 'newName',
@@ -111,7 +142,13 @@ describe(updateIosBuildProperty, () => {
       foo: 'foo',
       bar: 'bar',
     };
-    expect(updateIosBuildProperty(podfileProperties, 'bar', null)).toEqual({
+    expect(
+      BuildPropertiesActual.updateIosBuildProperty(
+        podfileProperties,
+        'bar',
+        null
+      )
+    ).toEqual({
       foo: 'foo',
       bar: 'bar',
     });
@@ -123,7 +160,14 @@ describe(updateIosBuildProperty, () => {
       bar: 'bar',
     };
     expect(
-      updateIosBuildProperty(podfileProperties, 'bar', null, { removePropWhenValueIsNull: true })
+      BuildPropertiesActual.updateIosBuildProperty(
+        podfileProperties,
+        'bar',
+        null,
+        {
+          removePropWhenValueIsNull: true,
+        }
+      )
     ).toEqual({
       foo: 'foo',
     });
