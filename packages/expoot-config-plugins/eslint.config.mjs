@@ -59,6 +59,8 @@ export default [
     rules: {
       ...vitest.configs.recommended.rules,
       'vitest/valid-title': 'off',
+      'vitest/no-commented-out-tests': 'off',
+      'vitest/expect-expect': 'off',
     },
   },
 ];

@@ -1,11 +1,7 @@
-import * as fs from 'fs';
+import '../../../_mocks/fs.js';
 
-import type { ExpoConfig } from '@expoot/config-types';
-import { vol } from 'memfs';
-
-import { ModPlatform } from '../../Plugin.types';
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
-import * as WarningAggregator from '../../utils/warnings';
+import fs from 'node:fs';
+import type FS from 'node:fs';
 
 import {
   formatDeviceFamilies,
@@ -13,11 +9,19 @@ import {
   getIsTabletOnly,
   getSupportsTablet,
   setDeviceFamily,
-} from '../DeviceFamily';
+} from '@expo/config-plugins/build/ios/DeviceFamily';
+import * as WarningAggregator from '@expo/config-plugins/build/utils/warnings';
+import type { ExpoConfig } from '@expoot/config-types';
+import { vol } from 'memfs';
+
+import type { ModPlatform } from '../../Plugin.types';
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
+
 import { getPbxproj } from '../utils/Xcodeproj';
 
-jest.mock('fs');
-jest.mock('../../utils/warnings');
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsActual);
+vi.mock('@expo/config-plugins/build/utils/warnings');
 
 const TABLET_AND_PHONE_SUPPORTED = [1, 2];
 const ONLY_PHONE_SUPPORTED = [1];
