@@ -1,9 +1,12 @@
-import path from 'path';
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
 
 import type { ExpoConfig } from '@expoot/config-types';
 import { fs as memfs, vol } from 'memfs';
 
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
 
 import {
   getBundleIdentifier,
@@ -19,9 +22,8 @@ const baseExpoConfig: ExpoConfig = {
   version: '1.0.0',
 };
 
-jest.mock('fs');
-
-const originalFs = jest.requireActual('fs');
+const originalFs: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(originalFs);
 
 describe('BundleIdentifier module', () => {
   const platform = 'ios';
@@ -47,7 +49,7 @@ describe('BundleIdentifier module', () => {
     afterEach(() => vol.reset());
 
     it('returns null if no project.pbxproj exists', () => {
-      vol.mkdirpSync(projectRoot);
+      vol.mkdirSync(projectRoot, { recursive: true });
       const bundleId = getBundleIdentifierFromPbxproj(projectRoot, platform, {
         targetName: 'testproject',
       });
