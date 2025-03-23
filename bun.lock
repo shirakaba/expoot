@@ -48,12 +48,12 @@
     },
     "packages/expoot-config-plugins": {
       "name": "@expoot/config-plugins",
-      "version": "9.0.10",
+      "version": "9.0.17",
       "dependencies": {
         "@expoot/config-types": "workspace:*",
       },
       "devDependencies": {
-        "@expo/config-plugins": "^9.0.10",
+        "@expo/config-plugins": "^9.0.17",
         "@tsconfig/node22": "^22.0.0",
         "@types/debug": "^4.1.12",
         "@types/getenv": "^1.0.0",
