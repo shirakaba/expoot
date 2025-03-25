@@ -1,15 +1,24 @@
-import fs from 'fs';
+import '../../../_mocks/fs.js';
 
+import * as fs from 'node:fs';
+import type FS from 'node:fs';
+
+import {
+  getName,
+  setDisplayName,
+  setName,
+  setProductName,
+} from '@expo/config-plugins/build/ios/Name';
 import type { ExpoConfig } from '@expoot/config-types';
 import { vol } from 'memfs';
 
-import { ModPlatform } from '../../Plugin.types';
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import type { ModPlatform } from '../../Plugin.types';
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
 
-import { getName, setDisplayName, setName, setProductName } from '../Name';
 import { getPbxproj, isBuildConfig, isNotComment } from '../utils/Xcodeproj';
 
-jest.mock('fs');
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsActual);
 
 describe(getName, () => {
   it('returns null if no bundleIdentifier is provided', () => {
