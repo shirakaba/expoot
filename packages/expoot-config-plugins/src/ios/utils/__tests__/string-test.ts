@@ -1,4 +1,4 @@
-import { trimQuotes } from '../string';
+import { trimQuotes } from '@expo/config-plugins/build/ios/utils/string';
 
 describe(trimQuotes, () => {
   it('trims quotes', () => {

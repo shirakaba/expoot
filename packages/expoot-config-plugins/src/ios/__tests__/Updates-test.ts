@@ -1,28 +1,53 @@
-import fs from 'fs';
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
+import * as Updates from '@expo/config-plugins/build/ios/Updates';
+import type { resolveConfigPluginFunctionWithInfo as resolveConfigPluginFunctionWithInfoType } from '@expo/config-plugins/build/utils/plugin-resolver';
+import type { ExpoConfig as ExpoConfigUpstream } from '@expo/config-types';
 import { vol } from 'memfs';
-import path from 'path';
 
-import * as Updates from '../Updates';
+const fsReal: typeof FS = await vi.importActual('node:fs');
 
-const fsReal = jest.requireActual('fs') as typeof fs;
-jest.mock('fs');
-jest.mock('resolve-from');
+vi.mock(
+  import('@expo/config-plugins/build/utils/plugin-resolver'),
+  async (_importOriginal) => {
+    // Avoid importing the original, because it involves dynamic require()
+    // statements, which vite-plugin-commonjs draws the line at.
 
-const { silent } = require('resolve-from');
+    return {
+      resolveConfigPluginFunctionWithInfo: vi.fn<
+        typeof resolveConfigPluginFunctionWithInfoType
+      >((_projectRoot: string, _pluginReference: string) => {
+        return {
+          plugin: (config: ExpoConfigUpstream, _props: unknown) => config,
+          pluginFile: '',
+          pluginReference: '',
+          isPluginFile: false,
+        };
+      }),
+    };
+  }
+);
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
-const sampleCodeSigningCertificatePath = path.resolve(fixturesPath, 'codeSigningCertificate.pem');
+const sampleCodeSigningCertificatePath = path.resolve(
+  fixturesPath,
+  'codeSigningCertificate.pem'
+);
 
 describe('iOS Updates config', () => {
   beforeEach(() => {
-    const resolveFrom = require('resolve-from');
-    resolveFrom.silent = silent;
     vol.reset();
   });
 
   it('sets the correct values in Expo.plist', async () => {
     vol.fromJSON({
-      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
+      '/app/hello': fsReal.readFileSync(
+        sampleCodeSigningCertificatePath,
+        'utf-8'
+      ),
     });
 
     const config = await Updates.setUpdatesConfigAsync(
@@ -65,7 +90,10 @@ describe('iOS Updates config', () => {
         'utf-8'
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
-      EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
+      EXUpdatesRequestHeaders: {
+        'expo-channel-name': 'test',
+        testheader: 'test',
+      },
     });
   });
 });

@@ -1,11 +1,16 @@
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
 import { vol } from 'memfs';
-import path from 'path';
 
-import { findApplicationTargetWithDependenciesAsync, TargetType } from '../Target';
+import {
+  findApplicationTargetWithDependenciesAsync,
+  TargetType,
+} from '../Target';
 
-jest.mock('fs');
-
-const originalFs = jest.requireActual('fs');
+const originalFs: typeof FS = await vi.importActual('node:fs');
 
 describe(findApplicationTargetWithDependenciesAsync, () => {
   const projectRoot = '/app';
@@ -21,7 +26,10 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
           'utf-8'
         ),
         'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme':
-          originalFs.readFileSync(path.join(__dirname, 'fixtures/multitarget.xcscheme'), 'utf-8'),
+          originalFs.readFileSync(
+            path.join(__dirname, 'fixtures/multitarget.xcscheme'),
+            'utf-8'
+          ),
       },
       projectRoot
     );
@@ -48,7 +56,10 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
           'utf-8'
         ),
         'ios/easwatchtest.xcodeproj/xcshareddata/xcschemes/easwatchtest.xcscheme':
-          originalFs.readFileSync(path.join(__dirname, 'fixtures/watch.xcscheme'), 'utf-8'),
+          originalFs.readFileSync(
+            path.join(__dirname, 'fixtures/watch.xcscheme'),
+            'utf-8'
+          ),
       },
       projectRoot
     );
@@ -66,7 +77,9 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
     expect(applicationTarget.dependencies?.[0].dependencies?.[0].name).toBe(
       'eas-watch-test WatchKit Extension'
     );
-    expect(applicationTarget.dependencies?.[0].dependencies?.[0].type).toBe(TargetType.OTHER);
+    expect(applicationTarget.dependencies?.[0].dependencies?.[0].type).toBe(
+      TargetType.OTHER
+    );
   });
 
   it('marks framework targets as non-signable', async () => {
@@ -76,10 +89,11 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
           path.join(__dirname, 'fixtures/project-with-framework.pbxproj'),
           'utf-8'
         ),
-        'ios/myapp.xcodeproj/xcshareddata/xcschemes/myapp.xcscheme': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/framework.xcscheme'),
-          'utf-8'
-        ),
+        'ios/myapp.xcodeproj/xcshareddata/xcschemes/myapp.xcscheme':
+          originalFs.readFileSync(
+            path.join(__dirname, 'fixtures/framework.xcscheme'),
+            'utf-8'
+          ),
       },
       projectRoot
     );

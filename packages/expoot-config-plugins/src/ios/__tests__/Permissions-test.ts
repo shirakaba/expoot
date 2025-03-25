@@ -1,7 +1,7 @@
-import { applyPermissions } from '../Permissions';
+import { applyPermissions } from '@expo/config-plugins/build/ios/Permissions';
 
 describe(applyPermissions, () => {
-  it(`applies permissions`, () => {
+  it('applies permissions', () => {
     expect(
       applyPermissions(
         {

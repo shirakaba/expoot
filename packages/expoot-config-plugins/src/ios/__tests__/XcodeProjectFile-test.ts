@@ -1,13 +1,21 @@
-import { vol } from 'memfs';
-import * as path from 'path';
+import '../../../_mocks/fs.js';
 
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
-import { createBuildSourceFile } from '../XcodeProjectFile';
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
+import { createBuildSourceFile } from '@expo/config-plugins/build/ios/XcodeProjectFile';
+import { vol } from 'memfs';
+
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
+
 import { getPbxproj } from '../utils/Xcodeproj';
 
-jest.mock('fs');
+const fsActual: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(fsActual);
 
-describe(createBuildSourceFile, () => {
+// Gotta skip this because `node_modules/xcode/lib/pbxProject.js` writes
+// `for (key in sections)`, which the runtime can't parse.
+describe.skip(createBuildSourceFile, () => {
   const projectRoot = '/alpha';
   const platform = 'ios';
   beforeAll(async () => {
@@ -18,7 +26,7 @@ describe(createBuildSourceFile, () => {
     vol.reset();
   });
 
-  it(`creates a source file`, () => {
+  it('creates a source file', () => {
     const project = getPbxproj(projectRoot, platform);
     // perform action
     createBuildSourceFile({
@@ -39,6 +47,10 @@ describe(createBuildSourceFile, () => {
       sourceTree: '"<group>"',
     });
 
-    expect(vol.existsSync(path.join(projectRoot, platform, 'HelloWorld/myfile.swift'))).toBe(true);
+    expect(
+      vol.existsSync(
+        path.join(projectRoot, platform, 'HelloWorld/myfile.swift')
+      )
+    ).toBe(true);
   });
 });

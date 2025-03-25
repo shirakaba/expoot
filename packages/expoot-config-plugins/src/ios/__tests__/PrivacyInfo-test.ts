@@ -1,13 +1,23 @@
+import '../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
 import { vol } from 'memfs';
-import path from 'path';
 
 import { setPrivacyInfo, PrivacyInfo } from '../PrivacyInfo';
-jest.mock('fs');
 
-jest.mock('../utils/Xcodeproj', () => ({
-  getProjectName: () => 'testproject',
-  addResourceFileToGroup: jest.fn(),
-}));
+const originalFs: typeof FS = await vi.importActual('node:fs');
+
+vi.mock(import('../utils/Xcodeproj'), async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    getProjectName: () => 'testproject',
+    addResourceFileToGroup: vi.fn(),
+  };
+});
 
 const projectRoot = 'myapp';
 
@@ -46,8 +56,6 @@ const privacyManifests: PrivacyInfo = {
 
 const filePath = 'ios/testproject/PrivacyInfo.xcprivacy';
 
-const originalFs = jest.requireActual('fs');
-
 describe('withPrivacyInfo', () => {
   afterEach(() => vol.reset());
   it('adds PrivacyInfo.xcprivacy file to the project and merges with existing file', async () => {
@@ -63,6 +71,8 @@ describe('withPrivacyInfo', () => {
     );
 
     setPrivacyInfo(mockConfig, privacyManifests);
-    expect(vol.readFileSync(path.join(projectRoot, filePath), 'utf-8')).toMatchSnapshot();
+    expect(
+      vol.readFileSync(path.join(projectRoot, filePath), 'utf-8')
+    ).toMatchSnapshot();
   });
 });

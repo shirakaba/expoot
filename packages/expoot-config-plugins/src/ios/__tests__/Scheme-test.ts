@@ -5,23 +5,24 @@ import {
   hasScheme,
   removeScheme,
   setScheme,
-} from '../Scheme';
+} from '@expo/config-plugins/build/ios/Scheme';
 
 describe('scheme', () => {
-  it(`returns empty array if no scheme is provided`, () => {
+  it('returns empty array if no scheme is provided', () => {
     expect(getScheme({})).toStrictEqual([]);
   });
 
-  it(`returns the scheme if provided`, () => {
+  it('returns the scheme if provided', () => {
     expect(getScheme({ scheme: 'myapp' })).toStrictEqual(['myapp']);
     expect(
       getScheme({
+        // @ts-expect-error Just writing what the original test was.
         scheme: ['myapp', 'other', null],
       })
     ).toStrictEqual(['myapp', 'other']);
   });
 
-  it(`sets the CFBundleUrlTypes if scheme is given`, () => {
+  it('sets the CFBundleUrlTypes if scheme is given', () => {
     expect(
       setScheme(
         {
@@ -36,15 +37,17 @@ describe('scheme', () => {
         {}
       )
     ).toMatchObject({
-      CFBundleURLTypes: [{ CFBundleURLSchemes: ['myapp', 'more', 'ios-only', 'com.demo.value'] }],
+      CFBundleURLTypes: [
+        { CFBundleURLSchemes: ['myapp', 'more', 'ios-only', 'com.demo.value'] },
+      ],
     });
   });
 
-  it(`makes no changes to the infoPlist no scheme is provided`, () => {
+  it('makes no changes to the infoPlist no scheme is provided', () => {
     expect(setScheme({}, {})).toMatchObject({});
   });
 
-  it(`verifies that a scheme exists`, () => {
+  it('verifies that a scheme exists', () => {
     const infoPlist = {
       CFBundleURLTypes: [{ CFBundleURLSchemes: ['myapp'] }],
     };
@@ -52,7 +55,7 @@ describe('scheme', () => {
     expect(hasScheme('myapp2', infoPlist)).toBe(false);
   });
 
-  it(`lists all of the schemes`, () => {
+  it('lists all of the schemes', () => {
     const infoPlist = {
       CFBundleURLTypes: [
         { CFBundleURLSchemes: ['myapp1', 'myapp2'] },
@@ -62,7 +65,7 @@ describe('scheme', () => {
     expect(getSchemesFromPlist(infoPlist).length).toBe(3);
   });
 
-  it(`append a scheme`, () => {
+  it('append a scheme', () => {
     const infoPlist = {
       CFBundleURLTypes: [
         { CFBundleURLSchemes: ['myapp1', 'myapp2'] },
@@ -84,7 +87,7 @@ describe('scheme', () => {
     });
   });
 
-  it(`removes a scheme`, () => {
+  it('removes a scheme', () => {
     const infoPlist = {
       CFBundleURLTypes: [
         { CFBundleURLSchemes: ['myapp1', 'myapp2'] },

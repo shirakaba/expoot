@@ -3,19 +3,19 @@ import {
   LANDSCAPE_ORIENTATIONS,
   PORTRAIT_ORIENTATIONS,
   setOrientation,
-} from '../Orientation';
+} from '@expo/config-plugins/build/ios/Orientation';
 
 describe('orientation', () => {
-  it(`returns null if nothing is provided`, () => {
+  it('returns null if nothing is provided', () => {
     expect(getOrientation({})).toBe(null);
   });
 
-  it(`returns the value if provided`, () => {
+  it('returns the value if provided', () => {
     expect(getOrientation({ orientation: 'portrait' })).toBe('portrait');
     expect(getOrientation({ orientation: 'landscape' })).toBe('landscape');
   });
 
-  it(`sets to appropriate values`, () => {
+  it('sets to appropriate values', () => {
     expect(setOrientation({ orientation: 'portrait' }, {})).toMatchObject({
       UISupportedInterfaceOrientations: PORTRAIT_ORIENTATIONS,
     });
@@ -25,7 +25,10 @@ describe('orientation', () => {
     });
 
     expect(setOrientation({}, {})).toMatchObject({
-      UISupportedInterfaceOrientations: [...PORTRAIT_ORIENTATIONS, ...LANDSCAPE_ORIENTATIONS],
+      UISupportedInterfaceOrientations: [
+        ...PORTRAIT_ORIENTATIONS,
+        ...LANDSCAPE_ORIENTATIONS,
+      ],
     });
   });
 });

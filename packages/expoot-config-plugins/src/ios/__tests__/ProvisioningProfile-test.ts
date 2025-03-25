@@ -1,13 +1,17 @@
-import fs from 'fs';
-import { vol } from 'memfs';
-import path from 'path';
+import '../../../_mocks/fs.js';
 
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as fs from 'node:fs';
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
+import { vol } from 'memfs';
+
+import { readAllFiles } from '../../plugins/__tests__/fixtures/react-native-project';
+
 import { setProvisioningProfileForPbxproj } from '../ProvisioningProfile';
 
-jest.mock('fs');
-
-const originalFs = jest.requireActual('fs') as typeof import('fs');
+const originalFs: typeof FS = await vi.importActual('node:fs');
+const rnFixture = readAllFiles(originalFs);
 
 describe('ProvisioningProfile module', () => {
   describe(setProvisioningProfileForPbxproj, () => {
@@ -32,10 +36,14 @@ describe('ProvisioningProfile module', () => {
         );
         setProvisioningProfileForPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
-          profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+          profileName:
+            '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
         });
-        const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
+        const pbxprojContents = fs.readFileSync(
+          path.join(projectRoot, pbxProjPath),
+          'utf-8'
+        );
         expect(pbxprojContents).toMatchSnapshot();
       });
 
@@ -43,7 +51,10 @@ describe('ProvisioningProfile module', () => {
         vol.fromJSON(
           {
             [pbxProjPath]: originalFs.readFileSync(
-              path.join(__dirname, 'fixtures/project-multitarget-missing-targetattributes.pbxproj'),
+              path.join(
+                __dirname,
+                'fixtures/project-multitarget-missing-targetattributes.pbxproj'
+              ),
               'utf-8'
             ),
           },
@@ -51,10 +62,14 @@ describe('ProvisioningProfile module', () => {
         );
         setProvisioningProfileForPbxproj(projectRoot, platform, {
           targetName: 'multitarget',
-          profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+          profileName:
+            '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
         });
-        const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
+        const pbxprojContents = fs.readFileSync(
+          path.join(projectRoot, pbxProjPath),
+          'utf-8'
+        );
         expect(pbxprojContents).toMatchSnapshot();
       });
     });
@@ -63,7 +78,8 @@ describe('ProvisioningProfile module', () => {
       beforeEach(() => {
         vol.fromJSON(
           {
-            [pbxProjPath]: rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+            [pbxProjPath]:
+              rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
           },
           projectRoot
         );
@@ -71,25 +87,38 @@ describe('ProvisioningProfile module', () => {
 
       it('configures the project.pbxproj file with the profile name and apple team id', () => {
         setProvisioningProfileForPbxproj(projectRoot, platform, {
-          profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+          profileName:
+            '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'J5FM626PE2',
         });
-        const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
+        const pbxprojContents = fs.readFileSync(
+          path.join(projectRoot, pbxProjPath),
+          'utf-8'
+        );
         expect(pbxprojContents).toMatchSnapshot();
       });
+
+      // eslint-disable-next-line vitest/no-identical-title
       it('configures the project.pbxproj file with the profile name and apple team id', () => {
         setProvisioningProfileForPbxproj(projectRoot, platform, {
-          profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+          profileName:
+            '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
           appleTeamId: 'Something Spaced',
         });
-        const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
-        expect(pbxprojContents).toMatch(/DevelopmentTeam = "Something Spaced";/);
+        const pbxprojContents = fs.readFileSync(
+          path.join(projectRoot, pbxProjPath),
+          'utf-8'
+        );
+        expect(pbxprojContents).toMatch(
+          /DevelopmentTeam = "Something Spaced";/
+        );
       });
       it('throws descriptive error when target name does not exist', () => {
         expect(() =>
           setProvisioningProfileForPbxproj(projectRoot, platform, {
             targetName: 'faketargetname',
-            profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+            profileName:
+              '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
             appleTeamId: 'J5FM626PE2',
           })
         ).toThrow("Could not find target 'faketargetname' in project.pbxproj");

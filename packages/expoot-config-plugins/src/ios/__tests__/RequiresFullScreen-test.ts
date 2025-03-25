@@ -1,8 +1,15 @@
-import * as WarningAggregator from '../../utils/warnings';
-import { setRequiresFullScreen } from '../RequiresFullScreen';
+import { setRequiresFullScreen } from '@expo/config-plugins/build/ios/RequiresFullScreen';
+import * as WarningAggregator from '@expo/config-plugins/build/utils/warnings';
+import type { JSONArray } from '@expo/json-file';
 
-it(`sets UIRequiresFullScreen value`, () => {
-  expect(setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})).toMatchObject({
+import type { InfoPlist } from '../../Plugin.types';
+
+vi.mock('@expo/config-plugins/build/utils/warnings');
+
+it('sets UIRequiresFullScreen value', () => {
+  expect(
+    setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})
+  ).toMatchObject({
     UIRequiresFullScreen: true,
   });
 
@@ -13,21 +20,26 @@ it(`sets UIRequiresFullScreen value`, () => {
 
 beforeEach(() => {
   // @ts-ignore: jest
-  // eslint-disable-next-line import/namespace
-  WarningAggregator.addWarningIOS = jest.fn();
+
+  WarningAggregator.addWarningIOS = vi.fn();
 });
 
-it(`sets requires full screen`, () => {
-  expect(setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})).toMatchObject({
+it('sets requires full screen', () => {
+  expect(
+    setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})
+  ).toMatchObject({
     UIRequiresFullScreen: true,
   });
 
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
 
-it(`updates the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking`, () => {
+it('updates the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking', () => {
   expect(
-    setRequiresFullScreen({ ios: { requireFullScreen: false, supportsTablet: true } }, {})
+    setRequiresFullScreen(
+      { ios: { requireFullScreen: false, supportsTablet: true } },
+      {}
+    )
   ).toMatchObject({
     UIRequiresFullScreen: false,
     'UISupportedInterfaceOrientations~ipad': [
@@ -41,9 +53,12 @@ it(`updates the UISupportedInterfaceOrientations~ipad values to support iPad mul
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
 
-it(`does not set the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking if supportsTablet is false`, () => {
+it('does not set the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking if supportsTablet is false', () => {
   expect(
-    setRequiresFullScreen({ ios: { requireFullScreen: false, supportsTablet: false } }, {})
+    setRequiresFullScreen(
+      { ios: { requireFullScreen: false, supportsTablet: false } },
+      {}
+    )
   ).toMatchObject({
     UIRequiresFullScreen: false,
   });
@@ -51,7 +66,7 @@ it(`does not set the UISupportedInterfaceOrientations~ipad values to support iPa
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
 
-xit(`warns when the predefined UISupportedInterfaceOrientations~ipad values are invalid`, () => {
+test.skip('warns when the predefined UISupportedInterfaceOrientations~ipad values are invalid', () => {
   setRequiresFullScreen(
     { ios: { requireFullScreen: false } },
     {
@@ -66,7 +81,7 @@ xit(`warns when the predefined UISupportedInterfaceOrientations~ipad values are 
   expect(WarningAggregator.addWarningIOS).toBeCalledTimes(1);
 });
 
-it(`does not warn when predefined orientation mask matches required values`, () => {
+it('does not warn when predefined orientation mask matches required values', () => {
   setRequiresFullScreen(
     { ios: { requireFullScreen: false } },
     {
@@ -82,7 +97,7 @@ it(`does not warn when predefined orientation mask matches required values`, () 
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
 
-it(`does not warn when predefined orientation mask is empty`, () => {
+it('does not warn when predefined orientation mask is empty', () => {
   setRequiresFullScreen(
     { ios: { requireFullScreen: false } },
     {
@@ -93,11 +108,23 @@ it(`does not warn when predefined orientation mask is empty`, () => {
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
 
-it(`cannot remove predefined orientation mask`, () => {
-  let plist = {};
-  plist = setRequiresFullScreen({ ios: { requireFullScreen: false, supportsTablet: true } }, plist);
-  expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
-  plist = setRequiresFullScreen({ ios: { requireFullScreen: true, isTabletOnly: true } }, plist);
-  expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
+it('cannot remove predefined orientation mask', () => {
+  let plist: InfoPlist = {};
+  plist = setRequiresFullScreen(
+    { ios: { requireFullScreen: false, supportsTablet: true } },
+    plist
+  );
+  expect(
+    (plist['UISupportedInterfaceOrientations~ipad'] as JSONArray | undefined)
+      ?.length
+  ).toBe(4);
+  plist = setRequiresFullScreen(
+    { ios: { requireFullScreen: true, isTabletOnly: true } },
+    plist
+  );
+  expect(
+    (plist['UISupportedInterfaceOrientations~ipad'] as JSONArray | undefined)
+      ?.length
+  ).toBe(4);
   expect(WarningAggregator.addWarningIOS).not.toBeCalled();
 });
