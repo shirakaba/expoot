@@ -1,13 +1,13 @@
-import assert from 'assert';
-import fs, { promises } from 'fs';
-import path from 'path';
+import assert from 'node:assert';
+import fs, { promises } from 'node:fs';
+import * as path from 'node:path';
 
 import type { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 import { fileExists } from '@expo/config-plugins/build/utils/modules';
 import { sortObject } from '@expo/config-plugins/build/utils/sortObject';
-import JsonFile, { JSONObject, JSONValue } from '@expo/json-file';
+import JsonFile, { type JSONObject, type JSONValue } from '@expo/json-file';
 import plist from '@expo/plist';
-import xcode, { XcodeProject } from 'xcode';
+import xcode, { type XcodeProject } from 'xcode';
 
 import type { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Entitlements, Paths } from '../ios';

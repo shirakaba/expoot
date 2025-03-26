@@ -18,7 +18,9 @@ export default defineConfig({
         if (
           id.includes('node_modules/xcode') ||
           id.includes('node_modules/@expo/config-plugins') ||
-          id.includes('node_modules/@expo/json-file')
+          id.includes('node_modules/@expo/json-file') ||
+          id.includes('node_modules/@expo/plist') ||
+          id.includes('node_modules/xmlbuilder')
         ) {
           return true;
         }
@@ -35,7 +37,14 @@ export default defineConfig({
     silent: false,
     server: {
       deps: {
-        inline: ['@expo/config-plugins', '@expo/json-file', 'glob', 'xcode'],
+        inline: [
+          '@expo/config-plugins',
+          '@expo/json-file',
+          '@expo/plist',
+          'glob',
+          'xcode',
+          'xmlbuilder',
+        ],
         moduleDirectories: [
           packages,
           rootNodeModules,
