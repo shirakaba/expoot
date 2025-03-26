@@ -1,8 +1,9 @@
-import fs from 'fs';
-import { join, relative } from 'path';
+import fs from 'node:fs';
+import { join, relative } from 'node:path';
 
 import { withXcodeProject } from '@expo/config-plugins/build/plugins/ios-plugins';
 import { addWarningIOS } from '@expo/config-plugins/build/utils/warnings';
+import type { ExpoConfig as UpstreamExpoConfig } from '@expo/config-types';
 import JsonFile from '@expo/json-file';
 import type { ExpoConfig } from '@expoot/config-types';
 import type { XcodeProject } from 'xcode';
@@ -20,7 +21,7 @@ type ResolvedLocalesJson = Record<string, LocaleJson>;
 type ExpoConfigLocales = NonNullable<ExpoConfig['locales']>;
 
 export const withLocales: ConfigPlugin = (config) => {
-  return withXcodeProject(config, async (config) => {
+  return withXcodeProject(config as UpstreamExpoConfig, async (config) => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot,
       platform: config.modRequest.platform,

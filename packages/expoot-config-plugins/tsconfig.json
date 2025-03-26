@@ -5,7 +5,8 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src", "ts-declarations"]
 }

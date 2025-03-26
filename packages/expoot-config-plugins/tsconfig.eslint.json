@@ -6,5 +6,11 @@
     "noEmit": true,
     "allowJs": true
   },
-  "include": ["src", "eslint.config.mjs"]
+  "include": [
+    "src",
+    "__mocks__",
+    "eslint.config.mjs",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ]
 }
