@@ -1,11 +1,13 @@
+import '../../../../_mocks/fs.js';
+
+import type FS from 'node:fs';
+import * as path from 'node:path';
+
 import { vol } from 'memfs';
-import path from 'path';
 
 import { getInfoPlistPathFromPbxproj } from '../getInfoPlistPath';
 
-jest.mock('fs');
-
-const originalFs = jest.requireActual('fs');
+const originalFs: typeof FS = await vi.importActual('node:fs');
 
 const projectRoot = '/app/';
 const platform = 'ios';
@@ -14,7 +16,10 @@ beforeAll(() => {
   vol.fromJSON(
     {
       'ios/testproject.xcodeproj/project.pbxproj': originalFs.readFileSync(
-        path.join(__dirname, '../../__tests__/fixtures/project-multitarget.pbxproj'),
+        path.join(
+          __dirname,
+          '../../__tests__/fixtures/project-multitarget.pbxproj'
+        ),
         'utf-8'
       ),
       'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme':

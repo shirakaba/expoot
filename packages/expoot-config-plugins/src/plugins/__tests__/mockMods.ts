@@ -35,7 +35,6 @@ export async function compileMockModWithResultsAsync<T>(
   }
 ): Promise<ExportedConfigWithProps<T>> {
   mockModWithResults(mod, modResults);
-  console.log('calling', plugin);
   // eslint-disable-next-line @typescript-eslint/await-thenable
   return (await plugin(config as any)) as ExportedConfigWithProps<T>;
 }
