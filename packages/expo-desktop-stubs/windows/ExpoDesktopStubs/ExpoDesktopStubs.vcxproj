@@ -103,7 +103,8 @@
   </ItemDefinitionGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClInclude Include="ExpoDesktopStubs.h" />
+    <ClInclude Include="ExpoAsset.h" />
+    <ClInclude Include="ExpoGlobal.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClInclude>

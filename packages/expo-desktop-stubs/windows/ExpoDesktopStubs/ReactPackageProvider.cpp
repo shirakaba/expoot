@@ -5,7 +5,8 @@
 #include "ReactPackageProvider.g.cpp"
 #endif
 
-#include "ExpoDesktopStubs.h"
+#include "ExpoAsset.h"
+#include "ExpoGlobal.h"
 
 using namespace winrt::Microsoft::ReactNative;
 
