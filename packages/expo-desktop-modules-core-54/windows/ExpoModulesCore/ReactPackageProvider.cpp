@@ -1,5 +1,7 @@
-#include "ReactPackageProvider.h"
 #include "pch.h"
+#include <NativeModules.h>
+
+#include "ReactPackageProvider.h"
 #if __has_include("ReactPackageProvider.g.cpp")
 #include "ReactPackageProvider.g.cpp"
 #endif
