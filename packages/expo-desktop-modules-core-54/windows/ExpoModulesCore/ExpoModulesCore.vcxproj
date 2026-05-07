@@ -5,7 +5,7 @@
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <MinimalCoreWin>true</MinimalCoreWin>
-    <ProjectGuid>{BA199BDA-45DB-4A11-A031-79C0FFF4FB67}</ProjectGuid>
+    <ProjectGuid>{45CCA11B-4C7D-406D-9DCB-A823993FC653}</ProjectGuid>
     <ProjectName>ExpoModulesCore</ProjectName>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ExpoModulesCore</RootNamespace>
