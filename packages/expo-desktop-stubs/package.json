@@ -43,7 +43,7 @@
   "codegenConfig": {
     "name": "ExpoDesktopStubsSpec",
     "type": "modules",
-    "jsSrcDir": "src",
+    "jsSrcsDir": "src",
     "includesGeneratedCode": false,
     "windows": {
       "namespace": "ExpoDesktopStubsCodegen",

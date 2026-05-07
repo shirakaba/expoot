@@ -4,9 +4,9 @@
 #include "resource.h"
 
 #if __has_include("codegen/ExpoGlobalDataTypes.g.h")
-#include "codegen/ExpoGlobalDataTypes.g.h"
+#include "codegen/NativeExpoGlobalDataTypes.g.h"
 #endif
-#include "codegen/ExpoGlobalSpec.g.h"
+#include "codegen/NativeExpoGlobalSpec.g.h"
 
 #include "JSValue.h"
 #include "NativeModules.h"
