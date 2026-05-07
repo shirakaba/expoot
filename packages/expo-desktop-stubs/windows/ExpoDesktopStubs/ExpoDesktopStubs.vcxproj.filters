@@ -24,6 +24,9 @@
     <ClInclude Include="ExpoAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ExpoDesktopStubs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ExpoGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
