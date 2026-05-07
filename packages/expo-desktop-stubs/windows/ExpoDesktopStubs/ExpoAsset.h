@@ -22,14 +22,13 @@ namespace winrt::ExpoDesktopStubs {
 REACT_TURBO_MODULE(ExpoAsset);
 struct ExpoAsset {
   using ModuleSpec = ExpoDesktopStubsCodegen::ExpoAssetSpec;
-  using Response = NativeModuleSampleCodegen::SimpleHttpModuleSpec_Response;
 
   // An example asynchronous method which uses asynchronous Windows APIs to make a
   // http request to the given url and resolve the given promise with the result
   // https://github.com/microsoft/react-native-windows-samples/blob/8e327b591e3f4895988d9b65018fda2519152892/samples/NativeModuleSample/cpp-lib/windows/NativeModuleSample/SimpleHttpModule.h#L28-L54
   static winrt::Windows::Foundation::IAsyncAction GetHttpResponseAsync(
       std::string uri,
-      winrt::Microsoft::ReactNative::ReactPromise<Response> promise) noexcept {
+      winrt::Microsoft::ReactNative::ReactPromise<std::string> promise) noexcept {
     // (1) Capture the promise to make sure it doesn't get cleaned up during the
     //     asynchronous calls below.
     auto capturedPromise = promise;
@@ -50,9 +49,9 @@ struct ExpoAsset {
     int statusCodeInt = static_cast<int>(statusCode);
     if (statusCodeInt != 200) {
       auto error = winrt::Microsoft::ReactNative::ReactError();
-      error.Message = "Got non-200 response code: " + statusCodeInt + ".";
+      error.Message = std::string("Got non-200 response code: ") + std::to_string(statusCodeInt) + ".";
       promise.Reject(error);
-      return;
+      co_return;
     }
 
     // (5) Build a result object.
@@ -74,7 +73,7 @@ struct ExpoAsset {
   //  .then(result => console.log(result))
   //  .catch(error => console.log(error));
   REACT_METHOD(downloadAsync);
-  void downloadAsync(std::string uri, std::optional<std::string> md5Hash, std::string type, winrt::Microsoft::ReactNative::ReactPromise<Response> promise) noexcept {
+  void downloadAsync(std::string uri, std::optional<std::string> md5Hash, std::string type, winrt::Microsoft::ReactNative::ReactPromise<std::string> promise) noexcept {
     // Here we're simply starting our asynchronous method and returning back to
     // the caller
     auto asyncOp = GetHttpResponseAsync(uri, promise);

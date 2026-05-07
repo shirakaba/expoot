@@ -28,3 +28,6 @@
 #include <tchar.h>
 
 // Reference additional headers your project requires here
+// (1) Used by ExpoAsset to create an HttpClient
+#include <winrt/Windows.Web.Http.Headers.h>
+#include <winrt/Windows.Web.Http.h>
