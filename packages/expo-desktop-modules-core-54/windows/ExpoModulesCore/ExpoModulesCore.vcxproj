@@ -133,19 +133,45 @@
     <ClCompile Include="ReactPackageProvider.cpp">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClCompile>
-    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="..\..\common\cpp\EventEmitter.cpp" />
-    <ClCompile Include="..\..\common\cpp\JSIUtils.cpp" />
-    <ClCompile Include="..\..\common\cpp\LazyObject.cpp" />
-    <ClCompile Include="..\..\common\cpp\NativeModule.cpp" />
-    <ClCompile Include="..\..\common\cpp\ObjectDeallocator.cpp" />
-    <ClCompile Include="..\..\common\cpp\SharedObject.cpp" />
-    <ClCompile Include="..\..\common\cpp\SharedRef.cpp" />
-    <ClCompile Include="..\..\common\cpp\TypedArray.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewProps.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewShadowNode.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\EventEmitter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\JSIUtils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\LazyObject.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\NativeModule.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\ObjectDeallocator.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\SharedObject.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\SharedRef.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\TypedArray.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewProps.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewShadowNode.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ReactPackageProvider.idl" />
