@@ -81,8 +81,8 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>
         $(MSBuildThisFileDirectory);
-        $(ReactNativeWindowsDir)\vnext\ReactCommon;
-        $(ReactNativeWindowsDir)\vnext\ReactCommon\folly;
+        $(ReactNativeWindowsDir)\ReactCommon;
+        $(ReactNativeWindowsDir)\Folly;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
