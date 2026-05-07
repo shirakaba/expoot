@@ -73,27 +73,6 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   appWindow.Title(L"Expo Desktop Demo App");
 appWindow.Resize({1000, 1000});
 
-  reactNativeWin32App.ReactNativeHost().InstanceSettings().InstanceCreated(
-      [](const auto& sender,
-         const winrt::Microsoft::ReactNative::InstanceCreatedEventArgs&
-         args) { facebook::jsi::Runtime& runtime =
-             GetOrCreateContextRuntime(args.Context(),
-             args.RuntimeHandle());
-         // Install empty Expo object so that Expo JS runs enough to allow
-         // Expo modules to load using TurboModules.
-         
-         auto global = runtime.global();
-
-         // auto mainObject = std::make_shared<facebook::jsi::Object>(runtime);
-         // global.setProperty(runtime, "expo", *mainObject);
-
-         facebook::jsi::Value proxy = global.getProperty(runtime, "__turboModuleProxy");
-         facebook::jsi::Object proxyObject = proxy.asObject(runtime);
-         facebook::jsi::Function proxyFunction = proxyObject.asFunction(runtime);
-         
-         proxyFunction.call(runtime, facebook::jsi::String::createFromAscii(runtime, "DataMarshallingExamples"));
-      });
-
   // Get the ReactViewOptions so we can set the initial RN component to load
   auto viewOptions{reactNativeWin32App.ReactViewOptions()};
   viewOptions.ComponentName(L"main");
