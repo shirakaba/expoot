@@ -81,6 +81,8 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>
         $(MSBuildThisFileDirectory);
+        $(SolutionDir)..\..\..\node_modules\react-native\ReactCommon;
+        $(SolutionDir)..\..\..\node_modules\react-native\ReactCommon\folly;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
