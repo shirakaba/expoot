@@ -70,6 +70,16 @@
           "Microsoft.WindowsAppSDK": "[1.7.250401001, )",
           "boost": "[1.83.0, )"
         }
+      },
+      "expomodulescore": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.ReactNative": "[0.81.12, )",
+          "Microsoft.ReactNative.Cxx": "[0.81.12, )",
+          "Microsoft.VCRTForwarders.140": "[1.0.2-rc, )",
+          "Microsoft.WindowsAppSDK": "[1.7.250401001, )",
+          "boost": "[1.83.0, )"
+        }
       }
     },
     "native,Version=v0.0/win": {
