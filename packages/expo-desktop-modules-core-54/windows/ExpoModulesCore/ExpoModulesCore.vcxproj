@@ -103,6 +103,21 @@
   </ItemDefinitionGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ClInclude Include="$(SolutionDir)..\common\cpp\BridgelessJSCallInvoker.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\EventEmitter.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\JSIUtils.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\LazyObject.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\NativeModule.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\ObjectDeallocator.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\SharedObject.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\SharedRef.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\TestingSyncJSCallInvoker.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\TypedArray.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewComponentDescriptor.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewEventEmitter.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewProps.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewShadowNode.h" />
+    <ClInclude Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewState.h" />
     <ClInclude Include="ExpoModulesCore.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
@@ -119,6 +134,18 @@
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\EventEmitter.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\JSIUtils.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\LazyObject.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\NativeModule.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\ObjectDeallocator.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\SharedObject.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\SharedRef.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\TypedArray.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewComponentDescriptor.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewEventEmitter.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewProps.cpp" />
+    <ClCompile Include="$(SolutionDir)..\common\cpp\fabric\ExpoViewShadowNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ReactPackageProvider.idl" />
