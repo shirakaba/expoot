@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Label="ReactNativeWindowsProps">
     <ReactNativeWindowsDir Condition="'$(ReactNativeWindowsDir)' == ''">$(SolutionDir)..\..\..\node_modules\react-native-windows\</ReactNativeWindowsDir>
+    <ReactNativeDir Condition="'$(ReactNativeDir)' == ''">$(SolutionDir)..\..\..\node_modules\react-native\</ReactNativeDir>
     <RunAutolinkCheck>false</RunAutolinkCheck>
   </PropertyGroup>
   <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.WindowsSdk.Default.props" />
@@ -81,8 +82,10 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>
         $(MSBuildThisFileDirectory);
-        $(ReactNativeWindowsDir)\ReactCommon;
-        $(ReactNativeWindowsDir)\Folly;
+        $(ReactNativeWindowsDir)stubs;
+        $(ReactNativeWindowsDir)\Shared\tracing;
+        $(ReactNativeDir)\ReactCommon;
+        $(ReactNativeDir)\ReactCommon\folly;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
