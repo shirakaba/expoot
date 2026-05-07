@@ -113,11 +113,6 @@
     <ClInclude Include="..\..\common\cpp\SharedRef.h" />
     <ClInclude Include="..\..\common\cpp\TestingSyncJSCallInvoker.h" />
     <ClInclude Include="..\..\common\cpp\TypedArray.h" />
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.h" />
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.h" />
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewProps.h" />
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewShadowNode.h" />
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewState.h" />
     <ClInclude Include="ExpoModulesCore.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
@@ -142,10 +137,6 @@
     <ClCompile Include="..\..\common\cpp\SharedObject.cpp" />
     <ClCompile Include="..\..\common\cpp\SharedRef.cpp" />
     <ClCompile Include="..\..\common\cpp\TypedArray.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewProps.cpp" />
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewShadowNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ReactPackageProvider.idl" />

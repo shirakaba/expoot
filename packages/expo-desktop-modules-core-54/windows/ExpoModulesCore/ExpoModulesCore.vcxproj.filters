@@ -57,21 +57,6 @@
     <ClInclude Include="..\..\common\cpp\TypedArray.h" >
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.h" >
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.h" >
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewProps.h" >
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewShadowNode.h" >
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\fabric\ExpoViewState.h" >
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -99,18 +84,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\TypedArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewComponentDescriptor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewEventEmitter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewProps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\fabric\ExpoViewShadowNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
