@@ -4,4 +4,5 @@
 #pragma once
 
 #include "ExpoAsset.h"
+#include "ExpoEventEmitter.h"
 #include "ExpoGlobal.h"

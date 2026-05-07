@@ -8,6 +8,7 @@
 #endif
 #include "codegen/NativeExpoGlobalSpec.g.h"
 
+#include "ExpoEventEmitter.h"
 #include "JSValue.h"
 #include "NativeModules.h"
 
@@ -50,6 +51,15 @@ struct ExpoGlobal {
       jsi::String::createFromUtf8(runtime, "expo"),
       std::move(descriptor),
     });
+
+    // Install `globalThis.expo.EventEmitter`. Mirrors what
+    // expo-modules-core does on iOS via `EXJSIInstaller`'s
+    // `installEventEmitterClass:` and on Android via
+    // `JSIContext::prepareRuntime` (see
+    // apps/demo/node_modules/expo-modules-core/android/src/main/cpp/JSIContext.cpp).
+    // Must run after the `global.expo` defineProperty above so the install
+    // can find the host object to attach to.
+    EventEmitter::installClass(runtime);
   }
 };
 

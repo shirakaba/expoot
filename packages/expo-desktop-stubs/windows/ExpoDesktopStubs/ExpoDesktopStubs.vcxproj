@@ -105,6 +105,7 @@
   <ItemGroup>
     <ClInclude Include="ExpoAsset.h" />
     <ClInclude Include="ExpoDesktopStubs.h" />
+    <ClInclude Include="ExpoEventEmitter.h" />
     <ClInclude Include="ExpoGlobal.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
