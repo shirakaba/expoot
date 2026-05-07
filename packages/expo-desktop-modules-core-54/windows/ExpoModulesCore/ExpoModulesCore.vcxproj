@@ -19,7 +19,7 @@
     <ReactNativeDir Condition="'$(ReactNativeDir)' == ''">$(SolutionDir)..\..\..\node_modules\react-native\</ReactNativeDir>
     <RunAutolinkCheck>false</RunAutolinkCheck>
   </PropertyGroup>
-  <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.WindowsSdk.Default.props" />
+  <Import Project="$(ReactNativeWindowsDir)PropertySheets\React.Cpp.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
