@@ -33,23 +33,16 @@ struct ExpoGlobal {
 
     // https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L137-L162
     // https://github.com/expo/expo/blob/1c87783c9b8f9a33a6349436cc0a62228541dbe6/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.cpp#L173
-    jsi::Object descriptor(runtime);
-    int options = 1 << 1;
-    descriptor.setProperty(runtime, "configurable", (bool) ((1 << 0) & options));
-    descriptor.setProperty(runtime, "enumerable", (bool) ((1 << 1) & options));
-    if ((bool) (1 << 2 & options)) {
-      descriptor.setProperty(runtime, "writable", true);
-    }
-    descriptor.setProperty(runtime, "value", facebook::jsi::Value(runtime, *mainObject));
+    jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 1 << 1);
+    descriptor.setProperty(runtime, "value", jsi::Value(runtime, *mainObject));
 
     // https://github.com/expo/expo/blob/1a4c17d95f6d104cfd1a2d0ff8ea062c01e904c9/packages/expo-modules-core/common/cpp/JSI/JSIUtils.cpp#L134
-    jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
-    jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
-    definePropertyFunction.callWithThis(runtime, objectClass, {
-      jsi::Value(runtime, global),
-      jsi::String::createFromUtf8(runtime, "expo"),
-      std::move(descriptor),
-    });
+    expo::common::defineProperty(
+      runtime,
+      &global,
+      "expo",
+      std::move(descriptor)
+    );
   }
 };
 
