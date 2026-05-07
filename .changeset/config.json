@@ -7,5 +7,12 @@
   "fixed": [],
   "linked": [],
   "updateInternalDependencies": "patch",
-  "ignore": ["expo-desktop-monorepo-scripts", "demo-expo-desktop", "expo-desktop-scripts"]
+  "ignore": [
+    "demo",
+    "expo-desktop-modules-core-54",
+    "expo-desktop-monorepo-scripts",
+    "demo-expo-desktop",
+    "expo-desktop-scripts",
+    "expo-desktop-stubs"
+  ]
 }
