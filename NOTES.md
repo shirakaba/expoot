@@ -49,6 +49,10 @@ globalThis.expo = {};
 
 `metro.config.js`:
 
+##### Via `getModulesRunBeforeMainModule()`
+
+This plain don't work:
+
 ```js
 const path = require("node:path");
 const { getDefaultConfig } = require("@expo/metro-config");
@@ -62,6 +66,29 @@ config.serializer.getModulesRunBeforeMainModule = (entryFilePath) => {
 };
 
 module.exports = config;
+```
+
+##### Via `getPolyfills()`
+
+This _does_ work, but you can't do imports from the polyfill (`require()` doesn't exist).
+
+```js
+const { getDefaultConfig } = require("@expo/metro-config");
+const { makeMetroConfig } = require("@rnx-kit/metro-config");
+
+const defaultConfig = getDefaultConfig(__dirname);
+module.exports = makeMetroConfig({
+  ...defaultConfig,
+  serializer: {
+    ...defaultConfig.serializer,
+    getPolyfills: () => {
+      console.log("getPolyfills()");
+      const polyfills = require("@react-native/js-polyfills")();
+      polyfills.push(require.resolve("./expo.polyfill.js"));
+      return polyfills;
+    },
+  },
+});
 ```
 
 #### Native JSI
@@ -191,3 +218,46 @@ While we could do our `dependencies` like this to depend on both and select at r
 ... it feels like a lot of headache compared to just settling on one.
 
 I feel that although config plugins and prebuild-related logic is released in lockstep with the SDK, there's usually nothing wrong with just using the latest implementation. So maybe we just bundle the latest and greatest?
+
+# Stubbing Expo on Windows
+
+## `globalThis.expo.modules`
+
+In `packages/expo-modules-core/src/ensureNativeModulesAreInstalled.native.ts`, `ensureNativeModulesAreInstalled()` is called, which performs `TurboModuleRegistry.get('ExpoModulesCore').installModules()`.
+
+- Source: https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/src/ensureNativeModulesAreInstalled.native.ts#L7
+- Implementation of `MainRuntimeInstaller::installModules()` for Android: https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L183-L201
+
+But all this does is create the `ExpoModulesHostObject`, which is just a property on `globalThis.expo`:
+
+```ts
+interface ExpoGlobal {
+  modules: ExpoModulesHostObject;
+}
+declare const expo: ExpoGlobal;
+```
+
+## `globalThis.expo`
+
+What we really want is `MainRuntimeInstaller::installMainObject()`, which runs a bunch of `JSDecorator`s (whatever those are) on a plain `jsi::Object`.
+
+- Source: https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L137-L162
+
+This is not called in JS land, but by `MainRuntimeInstaller::prepareRuntime()`
+
+- Android: https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L110-L135
+- iOS: https://github.com/expo/expo/blob/1b0052a9daab17dd6f3652bc75f17d3e93896f86/packages/expo-modules-core/ios/Core/AppContext.swift#L441-L469
+
+It's called upon `EXAppContext::create()`:
+
+- https://github.com/expo/expo/blob/1b0052a9daab17dd6f3652bc75f17d3e93896f86/packages/expo-modules-core/ios/Core/AppContext.swift#L10-L14
+
+I see a call to `EXAppContext *appContext = [appInstance createExpoGoAppContext];` inside `ExpoGoReactNativeFactory::host:didInitializeRuntime`:
+
+- https://github.com/expo/expo/blob/1b0052a9daab17dd6f3652bc75f17d3e93896f86/apps/expo-go/ios/Exponent/Versioned/Core/AppInstance/ExpoGoReactNativeFactory.mm#L50
+- https://github.com/expo/expo/blob/1b0052a9daab17dd6f3652bc75f17d3e93896f86/packages/expo/ios/AppDelegates/ExpoReactNativeFactory.mm#L30-L40
+
+That's a method called by `RCTHost`:
+
+- https://github.com/facebook/react-native/blob/97fa2a4ba7f95c5ddb7b96d74c9b831410ca4b46/packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm#L524
+- https://github.com/facebook/react-native/blob/97fa2a4ba7f95c5ddb7b96d74c9b831410ca4b46/packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTInstance.mm#L461
