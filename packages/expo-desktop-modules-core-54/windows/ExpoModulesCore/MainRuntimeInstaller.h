@@ -61,29 +61,29 @@ struct ExpoMainRuntimeInstaller {
     //   jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
     // ) noexcept {
     //   auto *runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-
+    //
     //   std::shared_ptr<react::CallInvoker> callInvoker;
     //   std::shared_ptr<react::RuntimeScheduler> runtimeScheduler;
-
+    //
     //   if (auto binding = react::RuntimeSchedulerBinding::getBinding(*runtime)) {
     //     runtimeScheduler = binding->getRuntimeScheduler();
     //     callInvoker = std::make_shared<react::RuntimeSchedulerCallInvoker>(runtimeScheduler);
     //   } else {
     //     callInvoker = std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get());
     //   }
-
+    //
     //   auto jsiContext = createJSIContext(
     //     runtimeContextHolder,
     //     jsRuntimePointer,
     //     jniDeallocator,
     //     callInvoker
     //   );
-
+    //
     //   prepareRuntime(
     //     self,
     //     jsiContext
     //   );
-
+    //
     //   return jsiContext;
     // }
 
@@ -95,18 +95,18 @@ struct ExpoMainRuntimeInstaller {
     //   auto cxxPart = jsiContext->cthis();
     //   auto runtimeHolder = cxxPart->runtimeHolder;
     //   jsi::Runtime &runtime = runtimeHolder->get();
-
+    //
     //   bindJSIContext(runtime, cxxPart);
-
+    //
     //   std::shared_ptr<jsi::Object> mainObject = installMainObject(
     //     runtime, MainRuntimeInstaller::getCoreModule(self)->cthis()->decorators
     //   );
-
+    //
     //   installClasses(
     //     runtime,
     //     cxxPart
     //   );
-
+    //
     //   installModules(
     //     runtime,
     //     cxxPart,
