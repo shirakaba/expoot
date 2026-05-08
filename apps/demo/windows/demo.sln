@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo\demo.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExpoDesktopStubs", "..\node_modules\expo-desktop-stubs\windows\ExpoDesktopStubs\ExpoDesktopStubs.vcxproj", "{BA199BDA-45DB-4A11-A031-79C0FFF4FB67}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExpoModulesCore", "..\node_modules\expo-desktop-modules-core-54\windows\ExpoModulesCore\ExpoModulesCore.vcxproj", "{45CCA11B-4C7D-406D-9DCB-A823993FC653}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExpoModulesCore", "..\node_modules\expo-desktop-modules-core\windows\ExpoModulesCore\ExpoModulesCore.vcxproj", "{45CCA11B-4C7D-406D-9DCB-A823993FC653}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

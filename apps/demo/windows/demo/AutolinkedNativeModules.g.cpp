@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "AutolinkedNativeModules.g.h"
 
-// Includes from expo-desktop-modules-core-54
+// Includes from expo-desktop-modules-core
 #include <winrt/ExpoModulesCore.h>
 
 // Includes from expo-desktop-stubs
@@ -14,7 +14,7 @@ namespace winrt::Microsoft::ReactNative
 
 void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::ReactNative::IReactPackageProvider> const& packageProviders)
 { 
-    // IReactPackageProviders from expo-desktop-modules-core-54
+    // IReactPackageProviders from expo-desktop-modules-core
     packageProviders.Append(winrt::ExpoModulesCore::ReactPackageProvider());
     // IReactPackageProviders from expo-desktop-stubs
     packageProviders.Append(winrt::ExpoDesktopStubs::ReactPackageProvider());

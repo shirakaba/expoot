@@ -9,7 +9,7 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "demo",
-    "expo-desktop-modules-core-54",
+    "expo-desktop-modules-core",
     "expo-desktop-monorepo-scripts",
     "demo-expo-desktop",
     "expo-desktop-scripts",

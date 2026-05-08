@@ -32,9 +32,6 @@ struct ExpoMainRuntimeInstaller {
   REACT_INIT(Initialize)
   // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L123
   void Initialize(winrt::Microsoft::ReactNative::ReactContext const &reactContext, facebook::jsi::Runtime &runtime) noexcept {
-
-    // Install an empty `expo` object so that Expo JS runs enough to allow Expo
-    // modules to load using TurboModules
     auto mainObject = std::make_shared<facebook::jsi::Object>(runtime);
     auto global = runtime.global();
 
@@ -114,7 +111,7 @@ struct ExpoMainRuntimeInstaller {
     //   );
     // }
 
-    // // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L150
+    // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L150
     void installClasses(jsi::Runtime &runtime) noexcept {
       // We can't predict the order of deallocation of the JSIContext and the SharedObject.
       // So we need to pass a new ref to retain the JSIContext to make sure it's not deallocated before the SharedObject.
