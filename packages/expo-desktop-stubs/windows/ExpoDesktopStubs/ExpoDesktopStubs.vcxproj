@@ -104,6 +104,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClInclude Include="ExpoAsset.h" />
+    <ClInclude Include="NativeUnimoduleProxy.h" />
     <ClInclude Include="ExpoDesktopStubs.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
