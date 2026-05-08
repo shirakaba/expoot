@@ -6,6 +6,6 @@
     "start": "expo-desktop"
   },
   "dependencies": {
-    "expo-desktop": "workspace:"
+    "expo-desktop": "workspace:*"
   }
 }

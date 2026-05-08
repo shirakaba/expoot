@@ -38,7 +38,7 @@
     "build": "tsgo --declaration --emitDeclarationOnly --allowJs --outDir types"
   },
   "dependencies": {
-    "expo-desktop-config-plugins": "workspace:"
+    "expo-desktop-config-plugins": "workspace:^1.0.0"
   },
   "devDependencies": {
     "@expo/config": "catalog:react-native-81",

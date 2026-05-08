@@ -25,12 +25,14 @@
   "files": [
     "LICENCE-expo.txt",
     "common",
-    "windows"
+    "src",
+    "windows",
+    "!windows/ExpoModulesCore/codegen"
   ],
   "type": "module",
   "react-native": "src/index.ts",
   "scripts": {
-    "codegen:windows": "react-native codegen-windows"
+    "codegen-windows": "react-native codegen-windows"
   },
   "devDependencies": {
     "react-native": "catalog:react-native-81",
