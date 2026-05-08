@@ -12,6 +12,7 @@
 #include "NativeModules.h"
 
 #include "JavaScriptObject.h"
+#include "JSIUtils.h"
 
 #include <string>
 
