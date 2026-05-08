@@ -47,7 +47,7 @@
     "includesGeneratedCode": false,
     "windows": {
       "namespace": "ExpoDesktopModulesCoreCodegen",
-      "outputDirectory": "windows/ExpoDesktopModulesCore/codegen",
+      "outputDirectory": "windows/ExpoModulesCore/codegen",
       "separateDataTypes": true
     }
   }
