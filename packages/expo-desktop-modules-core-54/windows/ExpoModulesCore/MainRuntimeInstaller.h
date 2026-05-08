@@ -47,6 +47,8 @@ struct ExpoMainRuntimeInstaller {
       "expo",
       std::move(descriptor)
     );
+
+    installClasses(runtime);
   }
 
   private:
@@ -113,10 +115,7 @@ struct ExpoMainRuntimeInstaller {
     // }
 
     // // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L150
-    void installClasses(
-      jsi::Runtime &runtime,
-      JSIContext *jsiContext
-    ) noexcept {
+    void installClasses(jsi::Runtime &runtime) noexcept {
       // We can't predict the order of deallocation of the JSIContext and the SharedObject.
       // So we need to pass a new ref to retain the JSIContext to make sure it's not deallocated before the SharedObject.
       // const auto releaser = [threadSafeRef = jsiContext->threadSafeJThis](
@@ -126,14 +125,14 @@ struct ExpoMainRuntimeInstaller {
       //   });
       // };
 
-      const auto releaser = [](const SharedObject::ObjectId objectId) {
+      const auto releaser = [](const expo::SharedObject::ObjectId objectId) {
         // No-op, as we haven't implemented JSIContext
       };
 
-      EventEmitter::installClass(runtime);
-      SharedObject::installBaseClass(runtime, releaser);
-      SharedRef::installBaseClass(runtime);
-      NativeModule::installClass(runtime);
+      expo::EventEmitter::installClass(runtime);
+      expo::SharedObject::installBaseClass(runtime, releaser);
+      expo::SharedRef::installBaseClass(runtime);
+      expo::NativeModule::installClass(runtime);
     }
 };
 
