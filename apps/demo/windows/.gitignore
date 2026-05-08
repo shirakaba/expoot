@@ -44,3 +44,4 @@ Ankh.NoLoad
 *.binlog
 *.err
 *.wrn
+/enc_temp_folder
