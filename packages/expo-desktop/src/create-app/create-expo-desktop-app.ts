@@ -137,6 +137,16 @@ export async function createExpoDesktopApp({
     await podInstall({ projectPath, type: "macos" });
   }
 
+  // react-native config seems to return `windows: null` on non-Windows
+  // platforms (while returning a populated object for Windows). If you force it
+  // to non-null for development on macOS, macOS runs the autolinking command
+  // successfully but writes out erroneous output, so
+  // there's no point.
+  if (platform === "win32") {
+    title("Autolinking the Windows app…", { spacing: 1 });
+    await autolinkWindows({ projectPath });
+  }
+
   title("Adding Expo support to the Metro config…", { spacing: 1 });
   await improveMetroConfig({ projectPath });
   await addWindowsExpoPolyfill({ projectPath });
@@ -374,6 +384,7 @@ async function updatePackageJson({
     }
     packageJson.scripts.macos = "rnc-cli run-macos";
     packageJson.scripts.windows = "rnc-cli run-windows";
+    packageJson.scripts["autolink-windows"] = "react-native autolink-windows";
   } else {
     if (!packageJson.dependencies) {
       packageJson.dependencies = {};
@@ -601,6 +612,32 @@ async function podInstall({ projectPath, type }: { projectPath: string; type: "i
   console.log(
     `\n${green("◆")}  Installed Cocoapods for the ${type === "ios" ? "iOS" : "macOS"} app.\n`,
   );
+}
+
+async function autolinkWindows({ projectPath }: { projectPath: string }) {
+  const command = "node";
+  const args = ["--run", "autolink-windows"];
+
+  const printedCommand = `${command} ${args.join(" ")}`;
+  console.log(`${cyan("◆")}  Running: ${yellow(printedCommand)}\n`);
+
+  try {
+    await tasks([
+      promisifiedSpawnTask({
+        title: "react-native autolink-windows",
+        command,
+        args,
+        options: { cwd: projectPath, stdio: "inherit" },
+      }),
+    ]);
+  } catch (error) {
+    log.error(
+      `Error running ${yellow(printedCommand)}${error instanceof Error ? `: ${error.message}` : "."}`,
+    );
+    process.exit(1);
+  }
+
+  console.log(`\n${green("◆")}  Autolinked the Windows app.\n`);
 }
 
 async function improveMetroConfig({ projectPath }: { projectPath: string }) {
