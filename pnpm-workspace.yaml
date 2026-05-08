@@ -50,7 +50,8 @@ catalogs:
     react: 19.2.0
     react-native: 0.83.6
 
-ignoredBuiltDependencies:
-  - esbuild
+# Formerly onlyBuiltDependencies/neverBuiltDependencies/ignoredBuiltDependencies
+allowBuilds:
+  esbuild: false
 
 nodeLinker: hoisted
