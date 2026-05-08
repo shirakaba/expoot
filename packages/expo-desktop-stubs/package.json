@@ -33,10 +33,12 @@
     "build": "tsgo --declaration --emitDeclarationOnly --allowJs --outDir types"
   },
   "devDependencies": {
+    "expo-desktop-modules-core": "workspace:expo-desktop-modules-core-54@*",
     "react-native": "catalog:react-native-81",
     "react-native-windows": "catalog:react-native-81"
   },
   "peerDependencies": {
+    "expo-desktop-modules-core": "*",
     "react-native": "*",
     "react-native-windows": "*"
   },
