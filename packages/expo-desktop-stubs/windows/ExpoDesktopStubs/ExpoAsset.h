@@ -239,15 +239,19 @@ struct ExpoAsset {
     try {
       auto buffer = co_await response.Content().ReadAsBufferAsync();
 
+      // Note: `winrt::to_hstring` has no `std::wstring` overload, so we go
+      // through `winrt::hstring{wchar_t const*}` (which is what we'd need
+      // anyway since `hstring` is itself UTF-16).
       auto parent = localPath.parent_path();
       auto folder = co_await winrt::Windows::Storage::StorageFolder::GetFolderFromPathAsync(
-          winrt::to_hstring(parent.wstring()));
+          winrt::hstring(parent.c_str()));
 
       // Write to "<filename>.download" first to avoid leaving a partially
       // written file at the target path on failure.
-      auto tempName = localPath.filename().wstring() + L".download";
+      auto fileName = localPath.filename();
+      auto tempName = fileName.wstring() + L".download";
       auto tempFile = co_await folder.CreateFileAsync(
-          winrt::to_hstring(tempName),
+          winrt::hstring(tempName.c_str()),
           winrt::Windows::Storage::CreationCollisionOption::ReplaceExisting);
 
       co_await winrt::Windows::Storage::FileIO::WriteBufferAsync(tempFile, buffer);
@@ -257,7 +261,7 @@ struct ExpoAsset {
       // `try FileManager.default.moveItem(at: fileURL, to: localUrl)` (iOS).
       co_await tempFile.MoveAsync(
           folder,
-          winrt::to_hstring(localPath.filename().wstring()),
+          winrt::hstring(fileName.c_str()),
           winrt::Windows::Storage::NameCollisionOption::ReplaceExisting);
 
       capturedPromise.Resolve(FileUrlFromPath(localPath));
@@ -321,7 +325,17 @@ struct ExpoAsset {
         return;
       }
 
-      auto localPath = cacheDirectory / (std::string("ExponentAsset-") + cacheFileId + "." + type);
+      // Build the filename in wide-string form. On Windows,
+      // `std::filesystem::path`'s `std::string` overloads use the native
+      // ANSI code page, which would mangle non-ASCII bytes (e.g. CJK or
+      // emoji) coming from the caller-supplied md5Hash / type fields.
+      // `winrt::to_hstring` performs proper UTF-8 -> UTF-16 conversion, and
+      // hstring implicitly converts to `std::wstring_view`.
+      std::wstring fileName = L"ExponentAsset-";
+      fileName += winrt::to_hstring(cacheFileId);
+      fileName += L".";
+      fileName += winrt::to_hstring(type);
+      auto localPath = cacheDirectory / fileName;
 
       // (3) Cache hit path: if the file already exists, and either no
       //     md5Hash was supplied (so we trust the cache) or the supplied
