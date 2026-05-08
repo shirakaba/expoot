@@ -398,6 +398,9 @@ async function updatePackageJson({
       ["expo-desktop-stubs"]: `^${versions.expoMajor}.0.0`,
     };
     for (const [key, value] of Object.entries(monorepoDeps)) {
+      // TODO: Try replacing this `localDev` logic with `linkWorkspacePackages`:
+      // - https://pnpm.io/workspaces#linkworkspacepackages
+      // - https://pnpm.io/workspaces#workspace-protocol-workspace
       packageJson.dependencies[key] = localDev ? `file:../../${key}` : value;
     }
 
