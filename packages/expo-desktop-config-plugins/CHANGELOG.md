@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.21
+
+### Patch Changes
+
+- republish all to check CI
+
 ## 1.1.20
 
 ### Patch Changes

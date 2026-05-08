@@ -1,5 +1,11 @@
 # expo-desktop-modules-core
 
+## 54.0.2
+
+### Patch Changes
+
+- republish all to check CI
+
 ## 54.0.1
 
 ### Patch Changes

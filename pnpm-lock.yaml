@@ -140,7 +140,7 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       expo-desktop-config-plugins:
-        specifier: workspace:^54.0.0
+        specifier: workspace:^1.0.0
         version: link:../expo-desktop-config-plugins
       expo-desktop-prebuild-config:
         specifier: workspace:^1.0.0

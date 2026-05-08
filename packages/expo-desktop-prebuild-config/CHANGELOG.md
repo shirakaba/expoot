@@ -1,5 +1,13 @@
 # expo-desktop-prebuild-config
 
+## 1.0.10
+
+### Patch Changes
+
+- republish all to check CI
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.21
+
 ## 1.0.9
 
 ### Patch Changes
