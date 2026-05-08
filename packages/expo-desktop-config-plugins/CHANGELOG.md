@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.20
+
+### Patch Changes
+
+- First publish with stubs and modules-core
+
 ## 1.1.19
 
 ### Patch Changes

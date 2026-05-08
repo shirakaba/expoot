@@ -1,5 +1,13 @@
 # expo-desktop-prebuild-config
 
+## 1.0.9
+
+### Patch Changes
+
+- First publish with stubs and modules-core
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.20
+
 ## 1.0.8
 
 ### Patch Changes
