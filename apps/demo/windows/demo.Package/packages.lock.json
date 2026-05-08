@@ -25,10 +25,14 @@
       "demo": {
         "type": "Project",
         "dependencies": {
-          "ExpoDesktopStubs": "[1.0.0, )"
+          "ExpoDesktopStubs": "[1.0.0, )",
+          "ExpoModulesCore": "[1.0.0, )"
         }
       },
       "expodesktopstubs": {
+        "type": "Project"
+      },
+      "expomodulescore": {
         "type": "Project"
       }
     },
