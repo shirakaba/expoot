@@ -5,4 +5,4 @@
 // method.
 //
 // We can't do any imports inside getPolyfills(), but can use the global proxy:
-globalThis.nativeModuleProxy.DataMarshallingExamples;
+globalThis.nativeModuleProxy.ExpoMainRuntimeInstaller;
