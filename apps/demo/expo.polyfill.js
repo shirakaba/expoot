@@ -11,29 +11,23 @@ globalThis.nativeModuleProxy.ExpoMainRuntimeInstaller;
 //  WARN  The "EXNativeModulesProxy" native module is not exported through NativeModules; verify that expo-modules-core's native code is linked properly
 //  WARN  No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?
 //  WARN  No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?
-
-const { ExpoAsset, NativeUnimoduleProxy } = globalThis.nativeModuleProxy;
+globalThis.nativeModuleProxy.NativeUnimoduleProxy;
+globalThis.nativeModuleProxy.ExpoAsset;
 
 const ExponentConstants = {};
-
-// Use Object.defineProperties to work around:
-// > TypeError: Cannot assign to property 'ExpoAsset' on HostObject with default setter
-Object.defineProperties(NativeUnimoduleProxy, {
-  ExpoAsset: {
-    configurable: false,
-    enumerable: true,
-    value: ExpoAsset,
-    writable: false,
-  },
-  ExponentConstants: {
-    configurable: false,
-    enumerable: true,
-    value: ExponentConstants,
-    writable: false,
-  },
-});
 
 globalThis.expo.modules = {
   ExpoAsset,
   ExponentConstants,
+  // node_modules/expo-modules-core/src/NativeModulesProxy.native.ts
+  NativeModulesProxy: {
+    exportedMethods: {
+      ExpoAsset: [],
+      ExponentConstants: [],
+    },
+    modulesConstants: {
+      ExpoAsset: [],
+      ExponentConstants: [],
+    },
+  },
 };
