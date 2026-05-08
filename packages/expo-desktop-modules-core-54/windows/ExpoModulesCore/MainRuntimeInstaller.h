@@ -13,6 +13,9 @@
 
 #include "JavaScriptObject.h"
 #include "JSIUtils.h"
+#include "EventEmitter.h"
+#include "SharedRef.h"
+#include "NativeModule.h"
 
 #include <string>
 
@@ -27,6 +30,7 @@ struct ExpoMainRuntimeInstaller {
  public:
   // https://github.com/microsoft/react-native-windows/blob/2c3604ceaf073de3aec7e3e56c2286ea1b15287d/vnext/Shared/Modules/BlobModule.cpp#L31
   REACT_INIT(Initialize)
+  // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L123
   void Initialize(winrt::Microsoft::ReactNative::ReactContext const &reactContext, facebook::jsi::Runtime &runtime) noexcept {
 
     // Install an empty `expo` object so that Expo JS runs enough to allow Expo
@@ -34,12 +38,9 @@ struct ExpoMainRuntimeInstaller {
     auto mainObject = std::make_shared<facebook::jsi::Object>(runtime);
     auto global = runtime.global();
 
-    // https://github.com/expo/expo/blob/a8cdc17a5d03cc62385c63696e317fe5b9851a87/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L137-L162
-    // https://github.com/expo/expo/blob/1c87783c9b8f9a33a6349436cc0a62228541dbe6/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.cpp#L173
     jsi::Object descriptor = expo::JavaScriptObject::preparePropertyDescriptor(runtime, 1 << 1);
     descriptor.setProperty(runtime, "value", jsi::Value(runtime, *mainObject));
 
-    // https://github.com/expo/expo/blob/1a4c17d95f6d104cfd1a2d0ff8ea062c01e904c9/packages/expo-modules-core/common/cpp/JSI/JSIUtils.cpp#L134
     expo::common::defineProperty(
       runtime,
       &global,
@@ -47,6 +48,93 @@ struct ExpoMainRuntimeInstaller {
       std::move(descriptor)
     );
   }
+
+  private:
+    // // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L50
+    // jni::local_ref<JSIContext::javaobject> MainRuntimeInstaller::install(
+    //   jni::alias_ref<MainRuntimeInstaller::javaobject> self,
+    //   jni::alias_ref<jni::JWeakReference<jobject>::javaobject> runtimeContextHolder,
+    //   jlong jsRuntimePointer,
+    //   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
+    //   jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
+    // ) noexcept {
+    //   auto *runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
+
+    //   std::shared_ptr<react::CallInvoker> callInvoker;
+    //   std::shared_ptr<react::RuntimeScheduler> runtimeScheduler;
+
+    //   if (auto binding = react::RuntimeSchedulerBinding::getBinding(*runtime)) {
+    //     runtimeScheduler = binding->getRuntimeScheduler();
+    //     callInvoker = std::make_shared<react::RuntimeSchedulerCallInvoker>(runtimeScheduler);
+    //   } else {
+    //     callInvoker = std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get());
+    //   }
+
+    //   auto jsiContext = createJSIContext(
+    //     runtimeContextHolder,
+    //     jsRuntimePointer,
+    //     jniDeallocator,
+    //     callInvoker
+    //   );
+
+    //   prepareRuntime(
+    //     self,
+    //     jsiContext
+    //   );
+
+    //   return jsiContext;
+    // }
+
+    // // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L96
+    // void MainRuntimeInstaller::prepareRuntime(
+    //   jni::alias_ref<MainRuntimeInstaller::javaobject> self,
+    //   jni::local_ref<JSIContext::javaobject> jsiContext
+    // ) noexcept {
+    //   auto cxxPart = jsiContext->cthis();
+    //   auto runtimeHolder = cxxPart->runtimeHolder;
+    //   jsi::Runtime &runtime = runtimeHolder->get();
+
+    //   bindJSIContext(runtime, cxxPart);
+
+    //   std::shared_ptr<jsi::Object> mainObject = installMainObject(
+    //     runtime, MainRuntimeInstaller::getCoreModule(self)->cthis()->decorators
+    //   );
+
+    //   installClasses(
+    //     runtime,
+    //     cxxPart
+    //   );
+
+    //   installModules(
+    //     runtime,
+    //     cxxPart,
+    //     mainObject
+    //   );
+    // }
+
+    // // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L150
+    void installClasses(
+      jsi::Runtime &runtime,
+      JSIContext *jsiContext
+    ) noexcept {
+      // We can't predict the order of deallocation of the JSIContext and the SharedObject.
+      // So we need to pass a new ref to retain the JSIContext to make sure it's not deallocated before the SharedObject.
+      // const auto releaser = [threadSafeRef = jsiContext->threadSafeJThis](
+      //   const SharedObject::ObjectId objectId) {
+      //   threadSafeRef->use([objectId](jni::alias_ref<JSIContext::javaobject> globalRef) {
+      //     JSIContext::deleteSharedObject(globalRef, objectId);
+      //   });
+      // };
+
+      const auto releaser = [](const SharedObject::ObjectId objectId) {
+        // No-op, as we haven't implemented JSIContext
+      };
+
+      EventEmitter::installClass(runtime);
+      SharedObject::installBaseClass(runtime, releaser);
+      SharedRef::installBaseClass(runtime);
+      NativeModule::installClass(runtime);
+    }
 };
 
 } // namespace ExpoDesktopModulesCore
