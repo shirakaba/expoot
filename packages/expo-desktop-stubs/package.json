@@ -29,8 +29,7 @@
   "type": "module",
   "react-native": "src/index.ts",
   "scripts": {
-    "codegen:windows": "react-native codegen-windows",
-    "build": "tsgo --declaration --emitDeclarationOnly --allowJs --outDir types"
+    "codegen:windows": "react-native codegen-windows"
   },
   "devDependencies": {
     "expo-desktop-modules-core": "workspace:expo-desktop-modules-core-54@*",

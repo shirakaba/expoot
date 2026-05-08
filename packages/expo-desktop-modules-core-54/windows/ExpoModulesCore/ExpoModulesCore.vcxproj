@@ -113,8 +113,9 @@
     <ClInclude Include="..\..\common\cpp\SharedRef.h" />
     <ClInclude Include="..\..\common\cpp\TestingSyncJSCallInvoker.h" />
     <ClInclude Include="..\..\common\cpp\TypedArray.h" />
-    <ClInclude Include="JavaScriptObject.h" />
     <ClInclude Include="ExpoModulesCore.h" />
+    <ClInclude Include="JavaScriptObject.h" />
+    <ClInclude Include="MainRuntimeInstaller.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClInclude>

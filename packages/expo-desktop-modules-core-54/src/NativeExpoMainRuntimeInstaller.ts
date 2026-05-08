@@ -6,4 +6,4 @@ export interface Spec extends TurboModule {
   // Init()
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>("ExpoGlobal");
+export default TurboModuleRegistry.getEnforcing<Spec>("ExpoMainRuntimeInstaller");

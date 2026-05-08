@@ -3,10 +3,10 @@
 #include "pch.h"
 #include "resource.h"
 
-#if __has_include("codegen/ExpoGlobalDataTypes.g.h")
-#include "codegen/NativeExpoGlobalDataTypes.g.h"
+#if __has_include("codegen/ExpoMainRuntimeInstallerDataTypes.g.h")
+#include "codegen/NativeExpoMainRuntimeInstallerDataTypes.g.h"
 #endif
-#include "codegen/NativeExpoGlobalSpec.g.h"
+#include "codegen/NativeExpoMainRuntimeInstallerSpec.g.h"
 
 #include "JSValue.h"
 #include "NativeModules.h"
@@ -17,11 +17,11 @@
 
 namespace jsi = facebook::jsi;
 
-namespace winrt::ExpoDesktopStubs {
+namespace winrt::ExpoDesktopModulesCore {
 
-REACT_TURBO_MODULE(ExpoGlobal);
-struct ExpoGlobal {
-  using ModuleSpec = ExpoDesktopStubsCodegen::ExpoGlobalSpec;
+REACT_TURBO_MODULE(ExpoMainRuntimeInstaller);
+struct ExpoMainRuntimeInstaller {
+  using ModuleSpec = ExpoDesktopModulesCoreCodegen::ExpoMainRuntimeInstallerSpec;
 
  public:
   // https://github.com/microsoft/react-native-windows/blob/2c3604ceaf073de3aec7e3e56c2286ea1b15287d/vnext/Shared/Modules/BlobModule.cpp#L31
@@ -48,4 +48,4 @@ struct ExpoGlobal {
   }
 };
 
-} // namespace ExpoDesktopStubs
+} // namespace ExpoDesktopModulesCore

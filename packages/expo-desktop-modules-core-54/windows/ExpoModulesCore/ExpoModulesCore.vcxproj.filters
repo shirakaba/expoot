@@ -21,10 +21,13 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ExpoModulesCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="JavaScriptObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExpoModulesCore.h">
+    <ClInclude Include="MainRuntimeInstaller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">

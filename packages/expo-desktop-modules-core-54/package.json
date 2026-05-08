@@ -28,6 +28,10 @@
     "windows"
   ],
   "type": "module",
+  "react-native": "src/index.ts",
+  "scripts": {
+    "codegen:windows": "react-native codegen-windows"
+  },
   "devDependencies": {
     "react-native": "catalog:react-native-81",
     "react-native-windows": "catalog:react-native-81"
@@ -35,5 +39,16 @@
   "peerDependencies": {
     "react-native": "~0.81.0",
     "react-native-windows": "~0.81.0"
+  },
+  "codegenConfig": {
+    "name": "ExpoDesktopModulesCoreSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "includesGeneratedCode": false,
+    "windows": {
+      "namespace": "ExpoDesktopModulesCoreCodegen",
+      "outputDirectory": "windows/ExpoDesktopModulesCore/codegen",
+      "separateDataTypes": true
+    }
   }
 }

@@ -4,4 +4,3 @@
 #pragma once
 
 #include "ExpoAsset.h"
-#include "ExpoGlobal.h"
