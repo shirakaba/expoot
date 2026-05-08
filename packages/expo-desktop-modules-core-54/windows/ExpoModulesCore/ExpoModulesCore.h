@@ -3,4 +3,4 @@
 
 #pragma once
 
-// No-op for now.
+#include "MainRuntimeInstaller.h"
