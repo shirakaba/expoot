@@ -271,6 +271,9 @@ importers:
 
   packages/expo-desktop/scripts:
     devDependencies:
+      '@types/node':
+        specifier: catalog:base
+        version: 24.12.3
       compare-versions:
         specifier: ^6.1.1
         version: 6.1.1

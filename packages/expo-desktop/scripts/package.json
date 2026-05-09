@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@types/node": "catalog:base",
     "compare-versions": "^6.1.1"
   }
 }
