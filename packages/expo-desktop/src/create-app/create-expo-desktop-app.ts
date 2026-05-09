@@ -659,7 +659,7 @@ const config = makeMetroConfig(getDefaultConfig(__dirname));
 
 const getPolyfills = config.serializer.getPolyfills;
 const windowsExpoPolyfill = require.resolve("./expo-polyfill.windows.js");
-config.serializer.getPolyfills = (platform) => {
+config.serializer.getPolyfills = ({ platform }) => {
   const polyfills = getPolyfills(platform);
   if (platform === "windows") {
     polyfills.push(windowsExpoPolyfill);
