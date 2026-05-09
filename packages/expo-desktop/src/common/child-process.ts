@@ -6,7 +6,6 @@ import path from "node:path";
 import process from "node:process";
 import readline from "node:readline";
 import { stripVTControlCharacters } from "node:util";
-import { Shescape, type ShescapeOptions } from "shescape";
 
 /**
  * Clack {@link Task} that runs a subprocess; piped stdout/stderr lines are sent
