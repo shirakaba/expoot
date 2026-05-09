@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.3
+
+### Patch Changes
+
+- regenerate lockfile
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.3
+
 ## 54.0.2
 
 ### Patch Changes

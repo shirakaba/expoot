@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.22
+
+### Patch Changes
+
+- regenerate lockfile
+
 ## 1.1.21
 
 ### Patch Changes

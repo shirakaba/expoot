@@ -1,5 +1,13 @@
 # expo-desktop-prebuild-config
 
+## 1.0.11
+
+### Patch Changes
+
+- regenerate lockfile
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.22
+
 ## 1.0.10
 
 ### Patch Changes
