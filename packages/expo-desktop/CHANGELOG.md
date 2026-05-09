@@ -1,5 +1,11 @@
 # expo-desktop
 
+## 0.1.25
+
+### Patch Changes
+
+- create-app now running to completion on Windows (tested with --local-dev using npm and app named "MyApp")
+
 ## 0.1.24
 
 ### Patch Changes
