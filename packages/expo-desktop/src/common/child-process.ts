@@ -6,6 +6,7 @@ import path from "node:path";
 import process from "node:process";
 import readline from "node:readline";
 import { stripVTControlCharacters } from "node:util";
+import { Shescape, type ShescapeOptions } from "shescape";
 
 /**
  * Clack {@link Task} that runs a subprocess; piped stdout/stderr lines are sent
@@ -75,7 +76,15 @@ function runPromisifiedSpawn({
     env: envWithForcedColorIfPiped({ ...options, stdio: stdioEffective }),
   };
 
-  const cp = spawn(command, args, spawnOptions);
+  type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+  const shescapeOptions: Writeable<ShescapeOptions> = {};
+  if (spawnOptions.shell) {
+    shescapeOptions.shell = spawnOptions.shell;
+  }
+  const shescape = new Shescape(shescapeOptions);
+  const escapedCommand = shescape.quoteAll([command, ...args]).join(" ");
+
+  const cp = spawn(escapedCommand, spawnOptions);
 
   /** Interleaved stdout/stderr lines in arrival order (tagged for readability). */
   const lineBuffer: string[] = [];
