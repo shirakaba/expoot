@@ -1,5 +1,11 @@
 # expo-desktop
 
+## 0.1.24
+
+### Patch Changes
+
+- Support naming app as MyApp and fix shell behaviour
+
 ## 0.1.23
 
 ### Patch Changes
