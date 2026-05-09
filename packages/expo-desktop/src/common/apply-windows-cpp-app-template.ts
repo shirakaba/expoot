@@ -253,19 +253,12 @@ async function renameCppAppPathsAsync(windowsRoot: string, filesafeName: string)
 
     const chosen = candidates[0];
     const newRelWin = cppAppRelativePathTransform(chosen.rel, filesafeName);
-    if (newRelWin === chosen.rel) {
-      throw new Error(
-        `Windows cpp-app rename: expected path containing MyApp to change: "${chosen.rel}"`,
-      );
-    }
-
     const newAbs = path.join(windowsRoot, newRelWin);
     if (newAbs === chosen.abs) {
       continue;
     }
 
     await fs.mkdir(path.dirname(newAbs), { recursive: true });
-
     try {
       await fs.rename(chosen.abs, newAbs);
     } catch (cause) {
