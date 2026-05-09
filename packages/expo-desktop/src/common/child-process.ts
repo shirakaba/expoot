@@ -64,6 +64,13 @@ function runPromisifiedSpawn({
   debugLogDir,
 }: {
   command: string;
+  /**
+   * It is the responsibility of the caller to escape and quote any args being
+   * passed in, as here we will only concatenate them.
+   *
+   * See `packages/expo-desktop/src/common/shescape.ts` to get a Shescape
+   * instance to escape and quote individual args as necessary.
+   */
   args: Array<string>;
   options: SpawnOptions;
   logLine: (line: string) => void;
@@ -76,38 +83,7 @@ function runPromisifiedSpawn({
     env: envWithForcedColorIfPiped({ ...options, stdio: stdioEffective }),
   };
 
-  type Writeable<T> = { -readonly [P in keyof T]: T[P] };
-  const shescapeOptions: Writeable<ShescapeOptions> = {};
-  if (spawnOptions.shell) {
-    shescapeOptions.shell = spawnOptions.shell;
-  }
-  let shescape: Shescape;
-  try {
-    shescape = new Shescape(shescapeOptions);
-  } catch (cause) {
-    if (!(cause instanceof Error) || cause.message !== "Shescape does not support the shell sh") {
-      throw new Error(
-        "Unable to spawn child process due to error being thrown when constructing Shescape instance",
-        { cause },
-      );
-    }
-
-    // Can't escape for the meta-shell `/bin/sh`. Let's try falling back to a
-    // typical Unix shell and hoping for the best.
-    // https://github.com/ericcornelissen/shescape/issues/2009
-    try {
-      shescapeOptions.shell = process.platform === "darwin" ? "zsh" : "bash";
-      shescape = new Shescape(shescapeOptions);
-    } catch (cause) {
-      throw new Error(
-        "Unable to spawn child process due to error being thrown when constructing fallback Shescape instance",
-        { cause },
-      );
-    }
-  }
-  const escapedCommand = shescape.quoteAll([command, ...args]).join(" ");
-
-  const cp = spawn(escapedCommand, spawnOptions);
+  const cp = spawn(`${command} ${args.join(" ")}`, spawnOptions);
 
   /** Interleaved stdout/stderr lines in arrival order (tagged for readability). */
   const lineBuffer: string[] = [];

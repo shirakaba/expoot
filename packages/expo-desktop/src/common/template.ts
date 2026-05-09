@@ -10,6 +10,7 @@ import {
   getTemplateFilesToRenameAsync,
   renameTemplateAppNameAsync,
 } from "./rename-template-app-name.ts";
+import { getShescape } from "./shescape.ts";
 
 export async function applySelectedTemplatesAsync({
   projectRoot,
@@ -161,13 +162,18 @@ async function prepareTemplateSourceAsync(
   taskTitle: string,
   source: TemplateSource,
 ): Promise<string> {
+  // We make sure there are no spaces in the path so that we don't need to
+  // quote/escape the shell command.
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "expo-desktop-template-"));
   const archivePath = path.join(tempRoot, "template.tgz");
+
   switch (source.type) {
     case "local-tarball":
       await fs.copyFile(source.path, archivePath);
       break;
     case "github": {
+      // Don't think it's possible to have spaces in the owner/repo/ref, so no
+      // percent-encoding or quoting needed.
       const tarballUrl = `https://codeload.github.com/${source.owner}/${source.repo}/tar.gz/${source.ref}`;
       const response = await fetch(tarballUrl);
       if (!response.ok || !response.body) {
@@ -178,11 +184,12 @@ async function prepareTemplateSourceAsync(
       break;
     }
     case "npm": {
+      const shescape = getShescape();
       await tasks([
         promisifiedSpawnTask({
           title: `npm pack (${source.spec})`,
           command: "npm",
-          args: ["pack", source.spec, "--silent"],
+          args: ["pack", shescape.quote(source.spec), "--silent"],
           options: { cwd: tempRoot },
         }),
       ]);
