@@ -3,15 +3,16 @@ import type { Task } from "@clack/prompts";
 import { spawn, type SpawnOptions } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { env } from "node:process";
+import process from "node:process";
 import readline from "node:readline";
 import { stripVTControlCharacters } from "node:util";
 
 /**
  * Clack {@link Task} that runs a subprocess; piped stdout/stderr lines are sent
- * through the task `message` callback (not `log.message`). Lines are also kept in
- * an interleaved buffer; on failure they are written under {@link debugLogDir} or
- * {@link SpawnOptions.cwd} or the current working directory.
+ * through the task `message` callback (not `log.message`). Lines are also kept
+ * in an interleaved buffer; on failure they are written under
+ * {@link debugLogDir} or {@link SpawnOptions.cwd} or the current working
+ * directory.
  */
 export function promisifiedSpawnTask({
   title,
@@ -23,8 +24,13 @@ export function promisifiedSpawnTask({
   title: string;
   command: string;
   args: Array<string>;
+  /**
+   * Defaults to `{ shell: true }`.
+   */
   options?: SpawnOptions;
-  /** Directory for debug logs when spawn cwd is unset (e.g. create-expo-app). */
+  /**
+   * Directory for debug logs when spawn cwd is unset (e.g. create-expo-app).
+   */
   debugLogDir?: string;
 }): Task {
   return {
@@ -33,7 +39,16 @@ export function promisifiedSpawnTask({
       runPromisifiedSpawn({
         command,
         args,
-        options,
+        options: {
+          // On Windows, Volta-managed package managers are spawned via .cmd
+          // shims which require shell interpretation. Although I've been having
+          // luck with `shell: false` with Volta-managed package managers on
+          // macOS, I'd rather just go with one consistent approach across all
+          // platforms, and `shell: true` will tend to reduce surprises.
+          // https://github.com/shirakaba/expo-desktop/issues/4
+          shell: true,
+          ...options,
+        },
         logLine: message,
         ...(debugLogDir !== undefined ? { debugLogDir } : {}),
       }),
@@ -190,7 +205,7 @@ function envWithForcedColorIfPiped(options: SpawnOptions | undefined): NodeJS.Pr
   const stderrMode = Array.isArray(stdio) ? stdio.at(2) : stdio;
   const capturesOutput = stdoutMode !== "inherit" || stderrMode !== "inherit";
 
-  const base = { ...env, ...options?.env };
+  const base = { ...process.env, ...options?.env };
   if (!capturesOutput || base.NO_COLOR !== undefined) {
     return base;
   }
