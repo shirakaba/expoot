@@ -81,7 +81,30 @@ function runPromisifiedSpawn({
   if (spawnOptions.shell) {
     shescapeOptions.shell = spawnOptions.shell;
   }
-  const shescape = new Shescape(shescapeOptions);
+  let shescape: Shescape;
+  try {
+    shescape = new Shescape(shescapeOptions);
+  } catch (cause) {
+    if (!(cause instanceof Error) || cause.message !== "Shescape does not support the shell sh") {
+      throw new Error(
+        "Unable to spawn child process due to error being thrown when constructing Shescape instance",
+        { cause },
+      );
+    }
+
+    // Can't escape for the meta-shell `/bin/sh`. Let's try falling back to a
+    // typical Unix shell and hoping for the best.
+    // https://github.com/ericcornelissen/shescape/issues/2009
+    try {
+      shescapeOptions.shell = process.platform === "darwin" ? "zsh" : "bash";
+      shescape = new Shescape(shescapeOptions);
+    } catch (cause) {
+      throw new Error(
+        "Unable to spawn child process due to error being thrown when constructing fallback Shescape instance",
+        { cause },
+      );
+    }
+  }
   const escapedCommand = shescape.quoteAll([command, ...args]).join(" ");
 
   const cp = spawn(escapedCommand, spawnOptions);
