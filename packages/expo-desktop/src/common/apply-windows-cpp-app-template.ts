@@ -37,7 +37,7 @@ export async function applyWindowsCppAppTemplateAsync(
 
   await renameCppAppPathsAsync(windowsRoot, name.filesafeName);
   await renderMustacheUnderWindowsAsync(windowsRoot, replacements);
-  await finalizeWindowsCppTemplateArtifacts(projectRoot, windowsRoot);
+  await finalizeWindowsCppTemplateArtifacts(projectRoot);
 }
 
 async function looksLikeCppAppTemplateAsync(windowsRoot: string): Promise<boolean> {
@@ -150,19 +150,35 @@ async function buildReplacementsRecord(
   };
 }
 
-function cppAppRelativePathTransform(relativeToWindows: string, filesafeName: string): string {
-  const parts = relativeToWindows.split(/[/\\]/);
-  const base = parts.at(-1) ?? "";
-  if (base === "_gitignore") {
-    parts[parts.length - 1] = ".gitignore";
-  } else if (base === "NuGet_Config") {
-    parts[parts.length - 1] = "NuGet.config";
-  }
-  return parts.join(path.sep).split("MyApp").join(filesafeName);
-}
+/** Placeholder app name baked into the react-native-windows cpp-app template. */
+const TEMPLATE_APP_NAME_PLACEHOLDER = "MyApp";
 
-function pathDepth(p: string): number {
-  return p.split(path.sep).filter(Boolean).length;
+/**
+ * Basenames in the cpp-app template that need a one-shot literal rename
+ * (independent of any `MyApp` substitution).
+ */
+const SPECIAL_BASENAME_RENAMES: Readonly<Record<string, string>> = {
+  _gitignore: ".gitignore",
+  NuGet_Config: "NuGet.config",
+};
+
+/**
+ * Returns the renamed basename for one entry in the cpp-app template, applying
+ * (in order):
+ *
+ * 1. {@link SPECIAL_BASENAME_RENAMES} (e.g. `_gitignore` → `.gitignore`).
+ * 2. `MyApp` → {@link filesafeName}, anywhere in the basename.
+ *
+ * If the user's `filesafeName` happens to equal `"MyApp"`, step (2) is a no-op
+ * (avoids degenerate self-renames that previously hung
+ * `renameCppAppPathsAsync`).
+ */
+function renameTemplateBasename(basename: string, filesafeName: string): string {
+  const renamed = SPECIAL_BASENAME_RENAMES[basename] ?? basename;
+  if (filesafeName === TEMPLATE_APP_NAME_PLACEHOLDER) {
+    return renamed;
+  }
+  return renamed.split(TEMPLATE_APP_NAME_PLACEHOLDER).join(filesafeName);
 }
 
 async function collectWindowsPathsAsync(windowsRoot: string): Promise<Array<string>> {
@@ -196,75 +212,49 @@ async function collectWindowsPathsAsync(windowsRoot: string): Promise<Array<stri
 }
 
 /**
- * Renames cpp-app paths containing `MyApp` → filesafeName. Uses iterative
- * shallow-first ordering (directories before files at the same depth). Deeper
- * fixes caused ENOTEMPTY: files were renamed into `*.Package/Images` before the
- * directory `MyApp.Package/Images` moved, leaving a non-empty destination.
+ * Walks `windowsRoot` pre-order (parents before children), renaming each entry
+ * by its basename via {@link renameTemplateBasename}:
+ *
+ * - `MyApp` (anywhere in the basename) → `filesafeName`
+ * - `_gitignore` → `.gitignore`
+ * - `NuGet_Config` → `NuGet.config`
+ *
+ * Pre-order is essential. `fs.rename()` atomically moves an entire directory
+ * subtree, so renaming a parent like `MyApp.Package` → `YourApp.Package`
+ * already relocates everything beneath it. A bottom-up order would risk
+ * `ENOTEMPTY` when the parent later tries to overwrite a non-empty
+ * destination.
+ *
+ * Symlinks are skipped to avoid escaping the template tree. Empty directories
+ * are handled naturally — `readdir` simply returns no children.
  */
 async function renameCppAppPathsAsync(windowsRoot: string, filesafeName: string): Promise<void> {
-  for (;;) {
-    const allPaths = await collectWindowsPathsAsync(windowsRoot);
-    const candidates: Array<{ abs: string; rel: string; depth: number; isDir: boolean }> = [];
-
-    for (const abs of allPaths) {
-      const rel = path.relative(windowsRoot, abs);
-      if (!rel || rel.includes("..")) {
-        continue;
-      }
-      if (!rel.includes("MyApp")) {
+  async function walk(dir: string): Promise<void> {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isSymbolicLink()) {
         continue;
       }
 
-      let stat;
-      try {
-        stat = await fs.lstat(abs);
-      } catch (error) {
-        if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
-          throw error;
+      const sourcePath = path.join(dir, entry.name);
+      const newBasename = renameTemplateBasename(entry.name, filesafeName);
+      const targetPath = newBasename === entry.name ? sourcePath : path.join(dir, newBasename);
+
+      if (targetPath !== sourcePath) {
+        try {
+          await fs.rename(sourcePath, targetPath);
+        } catch (cause) {
+          throw new Error(`Failed to rename "${sourcePath}" → "${targetPath}"`, { cause });
         }
-        continue;
       }
 
-      if (stat.isSymbolicLink()) {
-        continue;
+      if (entry.isDirectory()) {
+        await walk(targetPath);
       }
-
-      candidates.push({
-        abs,
-        rel,
-        depth: pathDepth(rel),
-        isDir: stat.isDirectory(),
-      });
-    }
-
-    if (!candidates.length) {
-      break;
-    }
-
-    candidates.sort((a, b) => {
-      if (a.depth !== b.depth) {
-        return a.depth - b.depth;
-      }
-      if (a.isDir !== b.isDir) {
-        return a.isDir ? -1 : 1;
-      }
-      return a.rel.localeCompare(b.rel);
-    });
-
-    const chosen = candidates[0];
-    const newRelWin = cppAppRelativePathTransform(chosen.rel, filesafeName);
-    const newAbs = path.join(windowsRoot, newRelWin);
-    if (newAbs === chosen.abs) {
-      continue;
-    }
-
-    await fs.mkdir(path.dirname(newAbs), { recursive: true });
-    try {
-      await fs.rename(chosen.abs, newAbs);
-    } catch (cause) {
-      throw new Error(`Failed to rename "${chosen.abs}" -> "${newAbs}"`, { cause });
     }
   }
+
+  await walk(windowsRoot);
 }
 
 const BINARY_EXTENSIONS = new Set([
@@ -351,22 +341,7 @@ async function renderMustacheUnderWindowsAsync(
   );
 }
 
-async function finalizeWindowsCppTemplateArtifacts(
-  projectRoot: string,
-  windowsRoot: string,
-): Promise<void> {
-  const gitignoreRelPaths = await glob("**/_gitignore", {
-    cwd: windowsRoot,
-    nodir: true,
-    dot: true,
-  });
-
-  for (const rel of gitignoreRelPaths.sort().reverse()) {
-    const fromAbs = path.join(windowsRoot, rel);
-    const toAbs = path.join(windowsRoot, path.dirname(rel), ".gitignore");
-    await renameIfExistsPreferDest(fromAbs, toAbs);
-  }
-
+async function finalizeWindowsCppTemplateArtifacts(projectRoot: string): Promise<void> {
   await renameIfExistsPreferDest(
     path.join(projectRoot, "NuGet_Config"),
     path.join(projectRoot, "NuGet.config"),
