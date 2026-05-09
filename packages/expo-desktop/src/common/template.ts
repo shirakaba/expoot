@@ -206,7 +206,11 @@ async function prepareTemplateSourceAsync(
   await tasks([
     promisifiedSpawnTask({
       title: taskTitle,
-      command: "tar",
+      // The paths are Windows-style paths rather than POSIX, so make sure to
+      // select Windows tar rather than GNU tar (which may be on path, even when
+      // invoking from cmd.exe, due to having git bash installed).
+      // tar C:\Users\Jamie\AppData\Local\Temp\expo-desktop-template-Uf1F1B\template.tgz -C C:\Users\Jamie\AppData\Local\Temp\expo-desktop-template-Uf1F1B
+      command: process.platform === "win32" ? "C:\\Windows\\System32\\tar.exe" : "tar",
       args: ["-xzf", archivePath, "-C", tempRoot],
     }),
   ]);
