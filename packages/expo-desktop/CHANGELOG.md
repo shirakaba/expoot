@@ -1,5 +1,11 @@
 # expo-desktop
 
+## 0.1.22
+
+### Patch Changes
+
+- Use `shell: true` when spawning child processes
+
 ## 0.1.21
 
 ### Patch Changes
