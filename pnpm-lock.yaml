@@ -79,7 +79,7 @@ importers:
         specifier: workspace:^1.1.22
         version: link:../../packages/expo-desktop-config-plugins
       expo-desktop-modules-core:
-        specifier: workspace:^54.0.3
+        specifier: workspace:^54.0.4
         version: link:../../packages/expo-desktop-modules-core
       expo-desktop-prebuild-config:
         specifier: workspace:^1.0.11
@@ -260,7 +260,7 @@ importers:
   packages/expo-desktop-stubs:
     devDependencies:
       expo-desktop-modules-core:
-        specifier: workspace:^54.0.3
+        specifier: workspace:^54.0.4
         version: link:../expo-desktop-modules-core
       react-native:
         specifier: catalog:react-native-81
