@@ -8,6 +8,8 @@ const {
   withPodfileProperties,
 } = require("./plugins/macos/macos-plugins");
 
+const { withAppCpp } = require("./plugins/windows/windows-plugins");
+
 const { withNameSettingsGradle } = require("./plugins/android/Name");
 const { withDisplayName } = require("./plugins/ios/Name");
 const { withExpoAppDelegate } = require("./plugins/macos/withExpoAppDelegate");
@@ -43,6 +45,8 @@ module.exports.withExpoAppDelegate = withExpoAppDelegate;
 module.exports.withExpoXcodeBuildPhase = withExpoXcodeBuildPhase;
 module.exports.withWindowSize = withWindowSize;
 module.exports.withMacosJsEnginePodfileProps = withMacosJsEnginePodfileProps;
+
+module.exports.withAppCpp = withAppCpp;
 
 module.exports.compileModsAsync = compileModsAsync;
 module.exports.withDefaultBaseMods = withDefaultBaseMods;

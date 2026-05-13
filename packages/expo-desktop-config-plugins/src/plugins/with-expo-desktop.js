@@ -26,6 +26,7 @@ module.exports = function withExpoDesktop(config, props) {
   config = withExpoAppDelegate(config, { windowTitle: props.displayName });
   config = withExpoXcodeBuildPhase(config, props);
 
+  // Windows-only config plugins
   config = withExpoAppCpp(config, { windowTitle: props.displayName });
 
   // TODO: We need a plugin to rename files like `myapp6.xcodeproj` to the

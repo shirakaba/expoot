@@ -1,9 +1,11 @@
 // Mirrors the minimal parts of withMacosBaseMods needed for mods like
 // `mods.windows.dangerous` (used by withDangerousMod-based plugins).
 
+const fsPromises = require("node:fs/promises");
 const {
   BaseMods: { withGeneratedBaseMods, provider },
 } = require("@expo/config-plugins");
+const Paths = require("./Paths");
 
 /**
  * @type {Partial<Record<string, import("@expo/config-plugins/build/plugins/createBaseMod").BaseModProviderMethods<any, any>>>}
@@ -26,6 +28,21 @@ const defaultProviders = {
       return {};
     },
     async write() {},
+  }),
+  // Append a rule to supply AppCpp data to mods on `mods.windows.appCpp`
+  appCpp: provider({
+    getFilePath({ modRequest: { projectRoot } }) {
+      // TODO: work out how to thread filesafeName through modRequest, probably
+      //       via evalModsAsync(). For now, we just infer it based on the name
+      //       of the .vcxproj file.
+      return Paths.getAppCppFilePath(projectRoot, undefined);
+    },
+    async read(filePath) {
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath, { modResults: { contents } }) {
+      await fsPromises.writeFile(filePath, contents);
+    },
   }),
 };
 

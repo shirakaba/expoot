@@ -1,6 +1,4 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const { withDangerousMod } = require("@expo/config-plugins");
+const { withAppCpp } = require("./windows-plugins");
 const { addWarningWindows } = require("../macos/_utils/warnings");
 
 /**
@@ -9,120 +7,58 @@ const { addWarningWindows } = require("../macos/_utils/warnings");
  * @returns {import("@expo/config-plugins").ExportedConfig}
  */
 function withExpoAppCpp(config, props = {}) {
-  return withDangerousMod(config, [
-    "windows",
-    async (config) => {
-      const projectRoot = config.modRequest?.projectRoot ?? config._internal?.projectRoot;
-      if (typeof projectRoot !== "string") {
-        return config;
-      }
-
-      const windowsRoot = path.join(projectRoot, "windows");
-      if (!fs.existsSync(windowsRoot)) {
-        return config;
-      }
-
-      const projectDir = guessWindowsProjectDir(windowsRoot);
-      if (!projectDir) {
+  return withAppCpp(config, (config) => {
+    try {
+      config.modResults.contents = rewriteComponentName(config.modResults.contents, {
+        componentName: "main",
+      });
+    } catch (error) {
+      if (error?.code === "ERR_NO_MATCH") {
         addWarningWindows(
           "windows",
-          `[with-expo-app-cpp] Could not find a Windows native project folder under "${windowsRoot}".`,
+          `[with-expo-app-cpp] Cannot set React component name because the App.cpp did not contain the expected "viewOptions.ComponentName(...)" call.`,
         );
-        return config;
+      } else {
+        throw error;
       }
+    }
 
-      const projectName = path.basename(projectDir);
-      const cppPath = path.join(projectDir, `${projectName}.cpp`);
-      if (!fs.existsSync(cppPath)) {
+    try {
+      config.modResults.contents = rewriteJavaScriptBundleFile(config.modResults.contents, {
+        bundleFileName: ".expo/.virtual-metro-entry",
+      });
+    } catch (error) {
+      if (error?.code === "ERR_NO_MATCH") {
         addWarningWindows(
           "windows",
-          `[with-expo-app-cpp] Could not find expected App.cpp file at "${cppPath}".`,
+          `[with-expo-app-cpp] Cannot set JavaScript bundle root because the App.cpp did not contain the expected "settings.JavaScriptBundleFile(...)" call.`,
         );
-        return config;
+      } else {
+        throw error;
       }
+    }
 
-      let contents = fs.readFileSync(cppPath, "utf8");
-
+    if (props.windowTitle) {
       try {
-        contents = rewriteComponentName(contents, { componentName: "main" });
-      } catch (error) {
-        if (error?.code === "ERR_NO_MATCH") {
-          addWarningWindows(
-            "windows",
-            `[with-expo-app-cpp] Cannot set React component name because the App.cpp did not contain the expected "viewOptions.ComponentName(...)" call.`,
-          );
-        } else {
-          throw error;
-        }
-      }
-
-      try {
-        contents = rewriteJavaScriptBundleFile(contents, {
-          bundleFileName: ".expo/.virtual-metro-entry",
+        config.modResults.contents = rewriteWindowTitle(config.modResults.contents, {
+          windowTitle: props.windowTitle,
         });
       } catch (error) {
         if (error?.code === "ERR_NO_MATCH") {
           addWarningWindows(
             "windows",
-            `[with-expo-app-cpp] Cannot set JavaScript bundle root because the App.cpp did not contain the expected "settings.JavaScriptBundleFile(...)" call.`,
+            `[with-expo-app-cpp] Cannot set window title because the App.cpp did not contain the expected "appWindow.Title(...)" call.`,
           );
         } else {
           throw error;
         }
       }
+    }
 
-      if (props.windowTitle) {
-        try {
-          contents = rewriteWindowTitle(contents, { windowTitle: props.windowTitle });
-        } catch (error) {
-          if (error?.code === "ERR_NO_MATCH") {
-            addWarningWindows(
-              "windows",
-              `[with-expo-app-cpp] Cannot set window title because the App.cpp did not contain the expected "appWindow.Title(...)" call.`,
-            );
-          } else {
-            throw error;
-          }
-        }
-      }
-
-      fs.writeFileSync(cppPath, contents);
-      return config;
-    },
-  ]);
+    return config;
+  });
 }
-
 module.exports.withExpoAppCpp = withExpoAppCpp;
-
-/**
- * @param {string} windowsRoot
- * @returns {string | null}
- */
-function guessWindowsProjectDir(windowsRoot) {
-  try {
-    const entries = fs.readdirSync(windowsRoot, { withFileTypes: true });
-    const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-
-    // Prefer a folder that looks like a standard RNW app project:
-    // windows/<ProjectName>/<ProjectName>.vcxproj
-    for (const dir of dirs) {
-      const full = path.join(windowsRoot, dir);
-      const vcxproj = path.join(full, `${dir}.vcxproj`);
-      if (fs.existsSync(vcxproj)) {
-        return full;
-      }
-    }
-
-    // Fall back to the first directory if there is exactly one.
-    if (dirs.length === 1) {
-      return path.join(windowsRoot, dirs[0]);
-    }
-  } catch {
-    // ignore
-  }
-
-  return null;
-}
 
 /**
  * @param {string} value
