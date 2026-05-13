@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.23
+
+### Patch Changes
+
+- various fixes for creating a Windows project
+
 ## 1.1.22
 
 ### Patch Changes

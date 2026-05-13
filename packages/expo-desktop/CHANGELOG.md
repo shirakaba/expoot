@@ -1,5 +1,13 @@
 # expo-desktop
 
+## 0.1.26
+
+### Patch Changes
+
+- various fixes for creating a Windows project
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.23
+
 ## 0.1.25
 
 ### Patch Changes

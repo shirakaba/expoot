@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.4
+
+### Patch Changes
+
+- various fixes for creating a Windows project
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.4
+
 ## 54.0.3
 
 ### Patch Changes

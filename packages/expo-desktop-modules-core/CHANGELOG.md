@@ -1,5 +1,11 @@
 # expo-desktop-modules-core
 
+## 54.0.4
+
+### Patch Changes
+
+- various fixes for creating a Windows project
+
 ## 54.0.3
 
 ### Patch Changes
