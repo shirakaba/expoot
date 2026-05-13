@@ -29,13 +29,25 @@ const defaultProviders = {
     },
     async write() {},
   }),
-  // Append a rule to supply AppCpp data to mods on `mods.windows.appCpp`
+  // Supplies MyApp.cpp as a raw string to mods on `mods.windows.appCpp`.
   appCpp: provider({
     getFilePath({ modRequest: { projectRoot } }) {
       // TODO: work out how to thread filesafeName through modRequest, probably
       //       via evalModsAsync(). For now, we just infer it based on the name
       //       of the .vcxproj file.
       return Paths.getAppCppFilePath(projectRoot, undefined);
+    },
+    async read(filePath) {
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath, { modResults: { contents } }) {
+      await fsPromises.writeFile(filePath, contents);
+    },
+  }),
+  // Supplies MyApp.vcxproj as a raw string to mods on `mods.windows.vcxproj`.
+  vcxproj: provider({
+    getFilePath({ modRequest: { projectRoot } }) {
+      return Paths.getVcxprojFilePath(projectRoot, undefined);
     },
     async read(filePath) {
       return Paths.getFileInfo(filePath);

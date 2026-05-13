@@ -8,62 +8,22 @@ const { addWarningWindows } = require("../macos/_utils/warnings");
 const ignoredPaths = ["**/node_modules/**"];
 
 /**
+ * Gets the path to MyApp.cpp (where "MyApp" may vary based on filesafeName).
+ *
  * @param {string} projectRoot
  * @param {string | undefined} filesafeName - An explicit filesafe name,
  * otherwise will try to infer it based on the name of the vcxproj.
  */
 function getAppCppFilePath(projectRoot, filesafeName) {
-  /** @type {Array<string>} */
-  let sortedGlobResult;
-  if (filesafeName) {
-    sortedGlobResult = withSortedGlobResult(
-      globSync(`windows/${filesafeName}/${filesafeName}.cpp`, {
-        absolute: true,
-        cwd: projectRoot,
-        ignore: ignoredPaths,
-      }),
-    );
-  } else {
-    const matches = globSync("windows/*/*.@(cpp|vcxproj)", {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    });
-
-    /** @type {Array<string>} */
-    const vcxprojFiles = [];
-    /** @type {Array<string>} */
-    const cppFiles = [];
-    for (const match of matches) {
-      if (match.endsWith(".vcxproj")) {
-        vcxprojFiles.push(match);
-      }
-      if (match.endsWith(".cpp")) {
-        cppFiles.push(match);
-      }
-    }
-
-    if (vcxprojFiles.length !== 1) {
-      throw new UnexpectedError(
-        `Could not find the App.cpp file path, as was unable to find a singular vxcproj to infer its name from (found ${vcxprojFiles.length}). Searched in root: "${projectRoot}"`,
-      );
-    }
-    const filesafeName = vcxprojFiles[0].replace(/\.vcxproj$/, "");
-
-    sortedGlobResult = withSortedGlobResult(
-      cppFiles.filter((file) => path.basename(file, ".cpp") === filesafeName),
-    );
-  }
-
-  const [using, ...extra] = sortedGlobResult;
+  const [using, ...extra] = globWithInferredFilesafeName(filesafeName, ".cpp");
   if (!using) {
-    throw new UnexpectedError(`Could not locate a valid App.cpp at root: "${projectRoot}"`);
+    throw new UnexpectedError(`Could not locate a valid MyApp.cpp at root: "${projectRoot}"`);
   }
 
   if (extra.length) {
     warnMultipleFiles({
       tag: "app-cpp",
-      fileName: "App.cpp",
+      fileName: "MyApp.cpp",
       projectRoot,
       using,
       extra,
@@ -74,17 +34,109 @@ function getAppCppFilePath(projectRoot, filesafeName) {
 }
 
 /**
+ * Gets the path to MyApp.vcxproj (where "MyApp" may vary based on
+ * filesafeName).
+ *
+ * @param {string} projectRoot
+ * @param {string | undefined} filesafeName - An explicit filesafe name,
+ * otherwise will try to infer it based on the name of the vcxproj.
+ */
+function getVcxprojFilePath(projectRoot, filesafeName) {
+  const [using, ...extra] = globWithInferredFilesafeName(filesafeName, ".vcxproj");
+  if (!using) {
+    throw new UnexpectedError(`Could not locate a valid MyApp.vcxproj at root: "${projectRoot}"`);
+  }
+
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: "app-vcxproj",
+      fileName: "MyApp.vcxproj",
+      projectRoot,
+      using,
+      extra,
+    });
+  }
+
+  return using;
+}
+
+/**
+ * Globs for a file `${filesafeName}${extension}`, e.g. "MyApp.cpp". Accepts
+ * either an explicit filesafe name (e.g. "MyApp"), or `undefined`, in which
+ * case it infers the filesafe name from the vcxproj (e.g. "MyApp.vcxproj" ->
+ * "MyApp").
+ *
+ * @throws If no vxcproj files, or more than one vcxproj file, is matched.
+ *
+ * @param {string | undefined} filesafeName
+ * @param {`.${string}`} extension
+ */
+function globWithInferredFilesafeName(filesafeName, extension) {
+  if (filesafeName) {
+    return withSortedGlobResult(
+      globSync(`windows/${filesafeName}/${filesafeName}${extension}`, {
+        absolute: true,
+        cwd: projectRoot,
+        ignore: ignoredPaths,
+      }),
+    );
+  }
+
+  const extensionWithoutPeriod = extension.replace(/^\./, "");
+  const globPattern =
+    extensionWithoutPeriod === "vcxproj"
+      ? `windows/*/*.vcxproj`
+      : `windows/*/*.@(${extensionWithoutPeriod}|vcxproj)`;
+  const matches = globSync(globPattern, {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths,
+  });
+
+  /** @type {Array<string>} */
+  const vcxprojFiles = [];
+  /** @type {Array<string>} */
+  const targetFiles = [];
+  for (const match of matches) {
+    if (match.endsWith(".vcxproj")) {
+      vcxprojFiles.push(match);
+    }
+    if (match.endsWith(extension)) {
+      targetFiles.push(match);
+    }
+  }
+
+  if (vcxprojFiles.length !== 1) {
+    throw new UnexpectedError(
+      `Could not find the MyApp${extension} file path, as was unable to find a singular vxcproj to infer its name from (found ${vcxprojFiles.length}). Searched in root: "${projectRoot}"`,
+    );
+  }
+  const filesafeName = vcxprojFiles[0].replace(/\.vcxproj$/, "");
+
+  return withSortedGlobResult(
+    targetFiles.filter((file) => path.basename(file, extension) === filesafeName),
+  );
+}
+
+/**
  * @param {string} filePath
  */
 function getLanguage(filePath) {
+  const extension = path.extname(filePath);
+
   switch (extension) {
     case ".cpp":
       return "cpp";
+    case ".vcxproj":
+      return "xml";
     default:
       throw new UnexpectedError(`Unexpected Windows file extension: ${extension}`);
   }
 }
 
+/**
+ * @param {string} filePath
+ */
 function getFileInfo(filePath) {
   return {
     path: path.normalize(filePath),
@@ -109,3 +161,4 @@ function warnMultipleFiles({ tag, fileName, projectRoot, using, extra }) {
 exports.getAppCppFilePath = getAppCppFilePath;
 exports.getFileInfo = getFileInfo;
 exports.getLanguage = getLanguage;
+exports.getVcxprojFilePath = getVcxprojFilePath;

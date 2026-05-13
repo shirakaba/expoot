@@ -2,6 +2,24 @@ const { withMod } = require("@expo/config-plugins");
 const obj = require("@expo/config-plugins/build/utils/obj");
 const warnings = require("./_utils/warnings");
 
+/**
+ * @template [T=any]
+ * @typedef {import("@expo/config-plugins").Mod<T>} Mod
+ */
+
+/**
+ * @template [Props=void]
+ * @typedef {import("@expo/config-plugins").ConfigPlugin<Props>} ConfigPlugin
+ */
+
+/**
+ * @typedef {import("@expo/config-plugins").InfoPlist} InfoPlist
+ * @typedef {import("@expo/config-types").ExpoConfig} ExpoConfig
+ * @typedef {import("@expo/config-plugins").ExportedConfig} ExportedConfig
+ * @typedef {import("xcode").XcodeProject} XcodeProject
+ * @typedef {ReturnType<import("./Paths").getFileInfo>} FileInfo
+ */
+
 function createInfoPlistPlugin(action, name) {
   const withUnknown = (config) =>
     withInfoPlist(config, async (config) => {
@@ -18,9 +36,8 @@ function createInfoPlistPlugin(action, name) {
 
 /**
  * @param {MutateInfoPlistAction} action
- * @param {{ infoPlistProperty: string; expoConfigProperty: string; expoPropertyGetter?: (config: import("@expo/config-types").ExpoConfig) => string;}} settings
+ * @param {{ infoPlistProperty: string; expoConfigProperty: string; expoPropertyGetter?: (config: ExpoConfig) => string;}} settings
  * @param {string} [name] the name of the config plugin
- * @returns {import("@expo/config-plugins").ConfigPlugin}
  *
  * @see https://github.com/expo/expo/blob/870dcba2ade9572fc279f0a47bfbdd78af4a236d/packages/%40expo/config-plugins/src/plugins/ios-plugins.ts#L36
  */
@@ -62,6 +79,10 @@ function createEntitlementsPlugin(action, name) {
   return withUnknown;
 }
 
+/**
+ * @param {ExportedConfig} config
+ * @param {Mod<FileInfo>} action
+ */
 const withAppDelegate = (config, action) => {
   return withMod(config, {
     platform: "macos",
@@ -86,6 +107,10 @@ const withMacOSViewController = (config, action) => {
   });
 };
 
+/**
+ * @param {ExportedConfig} config
+ * @param {Mod<InfoPlist>} action
+ */
 const withInfoPlist = (config, action) => {
   return withMod(config, {
     platform: "macos",
@@ -125,7 +150,8 @@ const withExpoPlist = (config, action) => {
 };
 
 /**
- * @type {import("@expo/config-plugins").ConfigPlugin<import("@expo/config-plugins").Mod<import("xcode").XcodeProject>>}
+ * @param {ExportedConfig} config
+ * @param {Mod<XcodeProject>} action
  */
 const withXcodeProject = (config, action) => {
   return withMod(config, {
@@ -143,6 +169,10 @@ const withPodfile = (config, action) => {
   });
 };
 
+/**
+ * @param {ExportedConfig} config
+ * @param {Mod<ReturnType<import("./BuildProperties").updateMacosBuildPropertiesFromConfig>>} action
+ */
 const withPodfileProperties = (config, action) => {
   return withMod(config, {
     platform: "macos",
