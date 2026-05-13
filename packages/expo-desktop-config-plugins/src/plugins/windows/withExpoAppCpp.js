@@ -44,7 +44,7 @@ function withExpoAppCpp(config, props = {}) {
       let contents = fs.readFileSync(cppPath, "utf8");
 
       try {
-        contents = rewriteComponentName(contents);
+        contents = rewriteComponentName(contents, { componentName: "main" });
       } catch (error) {
         if (error?.code === "ERR_NO_MATCH") {
           addWarningWindows(
@@ -57,7 +57,9 @@ function withExpoAppCpp(config, props = {}) {
       }
 
       try {
-        contents = rewriteJavaScriptBundleFile(contents);
+        contents = rewriteJavaScriptBundleFile(contents, {
+          bundleFileName: ".expo/.virtual-metro-entry",
+        });
       } catch (error) {
         if (error?.code === "ERR_NO_MATCH") {
           addWarningWindows(
@@ -92,6 +94,10 @@ function withExpoAppCpp(config, props = {}) {
 
 module.exports.withExpoAppCpp = withExpoAppCpp;
 
+/**
+ * @param {string} windowsRoot
+ * @returns {string | null}
+ */
 function guessWindowsProjectDir(windowsRoot) {
   try {
     const entries = fs.readdirSync(windowsRoot, { withFileTypes: true });
@@ -118,11 +124,21 @@ function guessWindowsProjectDir(windowsRoot) {
   return null;
 }
 
+/**
+ * @param {string} value
+ * @returns {string}
+ */
 function escapeCppWideString(value) {
   // Minimal escaping for a wide string literal in C++: L"..."
   return String(value).replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
+/**
+ * @param {string} contents
+ * @param {RegExp} regex
+ * @param {string} replacement
+ * @returns {string}
+ */
 function replaceOrThrow(contents, regex, replacement) {
   if (!regex.test(contents)) {
     const error = new Error(`Failed to match "${regex}" in contents:\n${contents}`);
@@ -132,6 +148,12 @@ function replaceOrThrow(contents, regex, replacement) {
   return contents.replace(regex, replacement);
 }
 
+/**
+ * @param {string} contents
+ * @param {object} props
+ * @param {string} props.windowTitle
+ * @returns {string}
+ */
 function rewriteWindowTitle(contents, { windowTitle }) {
   const escaped = escapeCppWideString(windowTitle);
   return replaceOrThrow(
@@ -141,18 +163,34 @@ function rewriteWindowTitle(contents, { windowTitle }) {
   );
 }
 
-function rewriteComponentName(contents) {
+/**
+ * @param {string} contents
+ * @param {object} props
+ * @param {string} props.componentName
+ * @returns {string}
+ */
+function rewriteComponentName(contents, { componentName }) {
+  const escaped = escapeCppWideString(componentName);
+
   return replaceOrThrow(
     contents,
     /viewOptions\.ComponentName\(L"[^"]*"\);/,
-    `viewOptions.ComponentName(L"main");`,
+    `viewOptions.ComponentName(L"${escaped}");`,
   );
 }
 
-function rewriteJavaScriptBundleFile(contents) {
+/**
+ * @param {string} contents
+ * @param {object} props
+ * @param {string} props.bundleFileName
+ * @returns {string}
+ */
+function rewriteJavaScriptBundleFile(contents, { bundleFileName }) {
+  const escaped = escapeCppWideString(bundleFileName);
+
   return replaceOrThrow(
     contents,
     /settings\.JavaScriptBundleFile\(L"[^"]*"\);/,
-    `settings.JavaScriptBundleFile(L".expo/.virtual-metro-entry");`,
+    `settings.JavaScriptBundleFile(L"${escaped}");`,
   );
 }
