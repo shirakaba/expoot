@@ -9,7 +9,7 @@
     "flatten:n": "node scripts/flatten-expo-desktop-protocols.mjs restore",
     "format": "oxfmt",
     "changeset": "changeset",
-    "release:version": "changeset version",
+    "release:version": "changeset version && pnpm install --lockfile-only",
     "release:publish": "changeset publish"
   },
   "devDependencies": {
