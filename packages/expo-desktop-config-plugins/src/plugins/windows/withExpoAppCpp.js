@@ -136,30 +136,23 @@ function rewriteWindowTitle(contents, { windowTitle }) {
   const escaped = escapeCppWideString(windowTitle);
   return replaceOrThrow(
     contents,
-    /appWindow\.Title\(L"[^"]*"\);\s*/m,
-    `appWindow.Title(L"${escaped}");\n`,
+    /appWindow\.Title\(L"[^"]*"\);/,
+    `appWindow.Title(L"${escaped}");`,
   );
 }
 
 function rewriteComponentName(contents) {
   return replaceOrThrow(
     contents,
-    /viewOptions\.ComponentName\(L"[^"]*"\);\s*/m,
-    `viewOptions.ComponentName(L"main");\n`,
+    /viewOptions\.ComponentName\(L"[^"]*"\);/,
+    `viewOptions.ComponentName(L"main");`,
   );
 }
 
 function rewriteJavaScriptBundleFile(contents) {
-  // cpp-app templates often set this in both `#if BUNDLE` and `#else` branches.
-  const pattern = /settings\.JavaScriptBundleFile\(L"index"\);\s*/g;
-  if (!pattern.test(contents)) {
-    const error = new Error(`Failed to match "${pattern}" in contents:\n${contents}`);
-    error.code = "ERR_NO_MATCH";
-    throw error;
-  }
-  pattern.lastIndex = 0;
-  return contents.replaceAll(
-    pattern,
-    `settings.JavaScriptBundleFile(L".expo/.virtual-metro-entry");\n`,
+  return replaceOrThrow(
+    contents,
+    /settings\.JavaScriptBundleFile\(L"[^"]*"\);/,
+    `settings.JavaScriptBundleFile(L".expo/.virtual-metro-entry");`,
   );
 }
