@@ -192,7 +192,7 @@ export function packageManagerExec(packageManager: "npm" | "bun" | "pnpm") {
       break;
     case "pnpm":
       command = "pnpm";
-      args.push("dlx");
+      args.push("exec");
   }
 
   return { args, command };
