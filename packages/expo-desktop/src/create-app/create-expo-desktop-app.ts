@@ -854,7 +854,6 @@ async function addApplyConfigPluginsScript({ projectPath }: { projectPath: strin
     path.resolve(projectPath, "apply-config-plugins.mjs"),
     `
 import { createRequire } from "node:module";
-import * as path from "node:path";
 
 const require = createRequire(import.meta.url);
 const { getPrebuildConfigAsync } = require("expo-desktop-prebuild-config");
@@ -891,9 +890,7 @@ async function applyConfigPlugins(options) {
   /** @type {typeof import("@expo/config")} */
   let expoConfigModule;
   try {
-    expoConfigModule = await import(
-      path.dirname(require.resolve("@expo/config/package.json", { paths: [projectRoot] }))
-    );
+    expoConfigModule = require("@expo/config");
   } catch (cause) {
     throw new Error(
       \`Error importing "@expo/config" relative to projectRoot "\${projectRoot}". Make sure to install node modules before running any prebuilds, and make sure that the project depends on the package named "expo".\`,
@@ -905,9 +902,7 @@ async function applyConfigPlugins(options) {
   /** @type {typeof import("@expo/config-plugins")} */
   let expoConfigPluginsModule;
   try {
-    expoConfigPluginsModule = await import(
-      path.dirname(require.resolve("@expo/config-plugins/package.json", { paths: [projectRoot] }))
-    );
+    expoConfigPluginsModule = require("@expo/config-plugins");
   } catch (cause) {
     throw new Error(
       \`Error importing "@expo/config-plugins" relative to projectRoot "\${projectRoot}". Make sure to install node modules before running any prebuilds, and make sure that the project depends on the package named "expo".\`,
