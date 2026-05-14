@@ -20,8 +20,6 @@ module.exports.withReactNativeDirs = withReactNativeDirs;
  * @param {import("@expo/config-plugins").ExportedConfigWithProps<ReturnType<import("fast-xml-parser").XMLParser["parse"]>>} config
  */
 function updateReactNativeWindowsProps(config) {
-  console.log("updateReactNativeWindowsProps()", config.modResults);
-
   // 1. Find <Project>
   if (!Array.isArray(config.modResults)) {
     throw new Error("Expected parsed XML to be an array.");
