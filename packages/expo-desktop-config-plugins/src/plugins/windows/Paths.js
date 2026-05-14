@@ -111,7 +111,7 @@ function globWithInferredFilesafeName(filesafeName, extension) {
       `Could not find the MyApp${extension} file path, as was unable to find a singular vxcproj to infer its name from (found ${vcxprojFiles.length}). Searched in root: "${projectRoot}"`,
     );
   }
-  const filesafeName = vcxprojFiles[0].replace(/\.vcxproj$/, "");
+  filesafeName = vcxprojFiles[0].replace(/\.vcxproj$/, "");
 
   return withSortedGlobResult(
     targetFiles.filter((file) => path.basename(file, extension) === filesafeName),
