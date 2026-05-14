@@ -1,6 +1,6 @@
 {
   "name": "expo-desktop-prebuild-config",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Desktop-friendly Expo prebuild config",
   "keywords": [
     "android",
@@ -38,7 +38,7 @@
     "build": "tsgo --declaration --emitDeclarationOnly --allowJs --outDir types"
   },
   "dependencies": {
-    "expo-desktop-config-plugins": "workspace:^1.1.24"
+    "expo-desktop-config-plugins": "workspace:^1.1.25"
   },
   "devDependencies": {
     "@expo/config": "catalog:react-native-81",

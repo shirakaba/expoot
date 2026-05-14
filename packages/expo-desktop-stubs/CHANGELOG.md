@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.5
+
+### Patch Changes
+
+- Re-release all
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.5
+
 ## 54.0.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.25
+
+### Patch Changes
+
+- Re-release all
+
 ## 1.1.24
 
 ### Patch Changes
