@@ -1,5 +1,13 @@
 # expo-desktop
 
+## 0.1.27
+
+### Patch Changes
+
+- Populate ReactNativeDir and ReactNativeWindowsDir correctly
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.24
+
 ## 0.1.26
 
 ### Patch Changes
