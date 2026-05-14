@@ -5,6 +5,7 @@ const { withDisplayName: withDisplayNameMacos } = require("./macos/Name");
 const { withExpoAppDelegate } = require("./macos/withExpoAppDelegate");
 const { withExpoXcodeBuildPhase } = require("./macos/withExpoXcodeBuildPhase");
 const { withExpoAppCpp } = require("./windows/withExpoAppCpp");
+const { withReactNativeDirs } = require("./windows/withReactNativeDirs");
 
 /**
  * @type {import("@expo/config-plugins").ConfigPlugin<{ displayName: string; bundleIdentifier?: string }>}
@@ -28,6 +29,7 @@ module.exports = function withExpoDesktop(config, props) {
 
   // Windows-only config plugins
   config = withExpoAppCpp(config, { windowTitle: props.displayName });
+  config = withReactNativeDirs(config, {});
 
   // TODO: We need a plugin to rename files like `myapp6.xcodeproj` to the
   //       actual filesafe name that the user requested. Some examples of

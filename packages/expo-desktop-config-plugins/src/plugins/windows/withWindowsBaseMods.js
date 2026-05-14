@@ -5,6 +5,8 @@ const fsPromises = require("node:fs/promises");
 const {
   BaseMods: { withGeneratedBaseMods, provider },
 } = require("@expo/config-plugins");
+const XMLBuilder = require("fast-xml-builder");
+const { XMLParser } = require("fast-xml-parser");
 const Paths = require("./Paths");
 
 /**
@@ -29,7 +31,6 @@ const defaultProviders = {
     },
     async write() {},
   }),
-  // Supplies MyApp.cpp as a raw string to mods on `mods.windows.appCpp`.
   appCpp: provider({
     getFilePath({ modRequest: { projectRoot } }) {
       // TODO: work out how to thread filesafeName through modRequest, probably
@@ -44,16 +45,24 @@ const defaultProviders = {
       await fsPromises.writeFile(filePath, contents);
     },
   }),
-  // Supplies MyApp.vcxproj as a raw string to mods on `mods.windows.vcxproj`.
   vcxproj: provider({
+    isIntrospective: true,
     getFilePath({ modRequest: { projectRoot } }) {
       return Paths.getVcxprojFilePath(projectRoot, undefined);
     },
     async read(filePath) {
-      return Paths.getFileInfo(filePath);
+      const data = await fsPromises.readFile(filePath, "utf-8");
+      return new XMLParser({ preserveOrder: true }).parse(data);
     },
-    async write(filePath, { modResults: { contents } }) {
-      await fsPromises.writeFile(filePath, contents);
+    async write(filePath, { modRequest: { introspect }, modResults }) {
+      const builder = new XMLBuilder({});
+      const output = builder.build(modResults);
+
+      // Return early without writing, in introspection mode.
+      if (introspect) {
+        return;
+      }
+      await fsPromises.writeFile(filePath, output);
     },
   }),
 };

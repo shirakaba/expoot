@@ -55,6 +55,8 @@
     "@expo/plist": "^0.4.8",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
+    "fast-xml-builder": "^1.2.0",
+    "fast-xml-parser": "^5.8.0",
     "glob": "^10.5.0",
     "slash": "^3.0.0",
     "slugify": "^1.6.6",

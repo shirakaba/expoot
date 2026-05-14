@@ -41,7 +41,7 @@ exports.withAppCpp = withAppCpp;
  * template.
  *
  * @param {ExportedConfig} config
- * @param {Mod<FileInfo>} action
+ * @param {Mod<ReturnType<import("fast-xml-parser").XMLParser["parse"]>>} action
  *
  * @see https://github.com/microsoft/react-native-windows/blob/cdca047ea950fb061c04ca09e2d172fef5811e02/vnext/templates/cpp-app/windows/MyApp/MyApp.vcxproj
  */
