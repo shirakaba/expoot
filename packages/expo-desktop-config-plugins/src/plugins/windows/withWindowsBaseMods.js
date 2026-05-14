@@ -1,13 +1,35 @@
-// Mirrors the minimal parts of withMacosBaseMods needed for mods like
-// `mods.windows.dangerous` (used by withDangerousMod-based plugins).
-
 const fsPromises = require("node:fs/promises");
 const {
   BaseMods: { withGeneratedBaseMods, provider },
 } = require("@expo/config-plugins");
-const XMLBuilder = require("fast-xml-builder");
+const { default: XMLBuilder } = require("fast-xml-builder");
 const { XMLParser } = require("fast-xml-parser");
 const Paths = require("./Paths");
+
+/** @type {import("fast-xml-parser").X2jOptions} */
+const losslessXmlParserOptions = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+  textNodeName: "#text",
+  cdataPropName: "__cdata",
+  commentPropName: "#comment",
+  trimValues: false,
+  parseTagValue: false,
+  parseAttributeValue: false,
+  preserveOrder: true,
+};
+
+/** @type {Parameters<import("fast-xml-builder")>["0"] & { entities?: Array<{ regex: RegExp, val: string }>}} */
+const losslessXmlBuilderOptions = {
+  ignoreAttributes: losslessXmlParserOptions.ignoreAttributes,
+  attributeNamePrefix: losslessXmlParserOptions.attributeNamePrefix,
+  textNodeName: losslessXmlParserOptions.textNodeName,
+  cdataPropName: losslessXmlParserOptions.cdataPropName,
+  commentPropName: losslessXmlParserOptions.commentPropName,
+  preserveOrder: losslessXmlParserOptions.preserveOrder,
+  format: false,
+  suppressEmptyNode: false,
+};
 
 /**
  * @type {Partial<Record<string, import("@expo/config-plugins/build/plugins/createBaseMod").BaseModProviderMethods<any, any>>>}
@@ -52,11 +74,15 @@ const defaultProviders = {
     },
     async read(filePath) {
       const data = await fsPromises.readFile(filePath, "utf-8");
-      return new XMLParser({ preserveOrder: true }).parse(data);
+      return new XMLParser(losslessXmlParserOptions).parse(data);
     },
     async write(filePath, { modRequest: { introspect }, modResults }) {
-      const builder = new XMLBuilder({});
-      const output = builder.build(modResults);
+      const builder = new XMLBuilder(losslessXmlBuilderOptions);
+      let output = builder.build(modResults);
+      // XMLBuilder writes out `&pos;` even if we special-case it in
+      // `options.entities`, so I'm resorting to this crude replace as the
+      // lesser evil.
+      output = output.replaceAll("&apos;", "'");
 
       // Return early without writing, in introspection mode.
       if (introspect) {

@@ -76,7 +76,7 @@ function getVcxprojFilePath({ projectRoot, filesafeName }) {
  * case it infers the filesafe name from the vcxproj (e.g. "MyApp.vcxproj" ->
  * "MyApp").
  *
- * @throws If no vxcproj files, or more than one vcxproj file, is matched.
+ * @throws If no vcxproj files, or more than one vcxproj file, is matched.
  *
  * @param {object} params
  * @param {string} params.projectRoot
@@ -120,10 +120,10 @@ function globWithInferredFilesafeName({ extension, filesafeName, projectRoot }) 
 
   if (vcxprojFiles.length !== 1) {
     throw new UnexpectedError(
-      `Could not find the MyApp${extension} file path, as was unable to find a singular vxcproj to infer its name from (found ${vcxprojFiles.length}). Searched in root: "${projectRoot}"`,
+      `Could not find the MyApp${extension} file path, as was unable to find a singular vcxproj to infer its name from (found ${vcxprojFiles.length}). Searched in root: "${projectRoot}"`,
     );
   }
-  filesafeName = vcxprojFiles[0].replace(/\.vcxproj$/, "");
+  filesafeName = path.basename(vcxprojFiles[0], ".vcxproj");
 
   return withSortedGlobResult(
     targetFiles.filter((file) => path.basename(file, extension) === filesafeName),
