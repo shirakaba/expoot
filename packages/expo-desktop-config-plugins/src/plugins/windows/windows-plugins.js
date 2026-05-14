@@ -29,7 +29,7 @@ const { withMod } = require("@expo/config-plugins");
  */
 const withAppCpp = (config, action) => {
   return withMod(config, {
-    platform: "macos",
+    platform: "windows",
     mod: "appCpp",
     action,
   });
@@ -47,7 +47,7 @@ exports.withAppCpp = withAppCpp;
  */
 const withVcxproj = (config, action) => {
   return withMod(config, {
-    platform: "macos",
+    platform: "windows",
     mod: "vcxproj",
     action,
   });

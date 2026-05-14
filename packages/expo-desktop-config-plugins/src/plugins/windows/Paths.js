@@ -10,12 +10,17 @@ const ignoredPaths = ["**/node_modules/**"];
 /**
  * Gets the path to MyApp.cpp (where "MyApp" may vary based on filesafeName).
  *
- * @param {string} projectRoot
- * @param {string | undefined} filesafeName - An explicit filesafe name,
+ * @param {object} params
+ * @param {string} params.projectRoot
+ * @param {string | undefined} params.filesafeName - An explicit filesafe name,
  * otherwise will try to infer it based on the name of the vcxproj.
  */
-function getAppCppFilePath(projectRoot, filesafeName) {
-  const [using, ...extra] = globWithInferredFilesafeName(filesafeName, ".cpp");
+function getAppCppFilePath({ projectRoot, filesafeName }) {
+  const [using, ...extra] = globWithInferredFilesafeName({
+    extension: ".cpp",
+    filesafeName,
+    projectRoot,
+  });
   if (!using) {
     throw new UnexpectedError(`Could not locate a valid MyApp.cpp at root: "${projectRoot}"`);
   }
@@ -37,12 +42,17 @@ function getAppCppFilePath(projectRoot, filesafeName) {
  * Gets the path to MyApp.vcxproj (where "MyApp" may vary based on
  * filesafeName).
  *
- * @param {string} projectRoot
- * @param {string | undefined} filesafeName - An explicit filesafe name,
+ * @param {object} params
+ * @param {string} params.projectRoot
+ * @param {string | undefined} params.filesafeName - An explicit filesafe name,
  * otherwise will try to infer it based on the name of the vcxproj.
  */
-function getVcxprojFilePath(projectRoot, filesafeName) {
-  const [using, ...extra] = globWithInferredFilesafeName(filesafeName, ".vcxproj");
+function getVcxprojFilePath({ projectRoot, filesafeName }) {
+  const [using, ...extra] = globWithInferredFilesafeName({
+    extension: ".vcxproj",
+    filesafeName,
+    projectRoot,
+  });
   if (!using) {
     throw new UnexpectedError(`Could not locate a valid MyApp.vcxproj at root: "${projectRoot}"`);
   }
@@ -68,10 +78,12 @@ function getVcxprojFilePath(projectRoot, filesafeName) {
  *
  * @throws If no vxcproj files, or more than one vcxproj file, is matched.
  *
- * @param {string | undefined} filesafeName
- * @param {`.${string}`} extension
+ * @param {object} params
+ * @param {string} params.projectRoot
+ * @param {string | undefined} params.filesafeName
+ * @param {`.${string}`} params.extension
  */
-function globWithInferredFilesafeName(filesafeName, extension) {
+function globWithInferredFilesafeName({ extension, filesafeName, projectRoot }) {
   if (filesafeName) {
     return withSortedGlobResult(
       globSync(`windows/${filesafeName}/${filesafeName}${extension}`, {

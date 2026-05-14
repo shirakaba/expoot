@@ -36,7 +36,7 @@ const defaultProviders = {
       // TODO: work out how to thread filesafeName through modRequest, probably
       //       via evalModsAsync(). For now, we just infer it based on the name
       //       of the .vcxproj file.
-      return Paths.getAppCppFilePath(projectRoot, undefined);
+      return Paths.getAppCppFilePath({ projectRoot, filesafeName: undefined });
     },
     async read(filePath) {
       return Paths.getFileInfo(filePath);
@@ -48,7 +48,7 @@ const defaultProviders = {
   vcxproj: provider({
     isIntrospective: true,
     getFilePath({ modRequest: { projectRoot } }) {
-      return Paths.getVcxprojFilePath(projectRoot, undefined);
+      return Paths.getVcxprojFilePath({ projectRoot, filesafeName: undefined });
     },
     async read(filePath) {
       const data = await fsPromises.readFile(filePath, "utf-8");
