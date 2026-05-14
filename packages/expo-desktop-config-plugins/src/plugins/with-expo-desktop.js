@@ -29,6 +29,12 @@ module.exports = function withExpoDesktop(config, props) {
 
   // Windows-only config plugins
   config = withExpoAppCpp(config, { windowTitle: props.displayName });
+  // FIXME: This is a good start for making `windows/MyApp/MyApp.vcxproj`
+  // correct, and it'd be nice to do the same with
+  // `windows/MyApp.Package/MyApp.Package.wapproj`. But it still doesn't address
+  // dependent projects (e.g. node_modules/expo-desktop-stubs/windows/ExpoDesktopStubs/ExpoDesktopStubs.vcxproj).
+  // The most attractive option is probably to place a `Directory.Build.props`
+  // at the project root (one level above `/windows`).
   config = withReactNativeDirs(config, {});
 
   // TODO: We need a plugin to rename files like `myapp6.xcodeproj` to the
