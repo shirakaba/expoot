@@ -4,7 +4,6 @@ const { withDisplayName: withDisplayNameIos } = require("./ios/Name");
 const { withDisplayName: withDisplayNameMacos } = require("./macos/Name");
 const { withExpoAppDelegate } = require("./macos/withExpoAppDelegate");
 const { withExpoXcodeBuildPhase } = require("./macos/withExpoXcodeBuildPhase");
-const { withDirectoryBuildProps } = require("./windows/withDirectoryBuildProps");
 const { withExpoAppCpp } = require("./windows/withExpoAppCpp");
 const { withReactNativeDirs } = require("./windows/withReactNativeDirs");
 
@@ -30,14 +29,9 @@ module.exports = function withExpoDesktop(config, props) {
 
   // Windows-only config plugins
   config = withExpoAppCpp(config, { windowTitle: props.displayName });
-  // Updates windows/MyApp/MyApp.vcxproj so the app project has the right
-  // ReactNativeDir / ReactNativeWindowsDir values.
+  // Updates windows/MyApp/MyApp.vcxproj and Directory.Build.props so that the
+  // app project has the right ReactNativeDir / ReactNativeWindowsDir values.
   config = withReactNativeDirs(config, {});
-  // Writes Directory.Build.props at the project root so every native project
-  // under the tree — including node_modules/<lib>/windows/<sub>/<sub>.vcxproj
-  // — picks up the same ReactNativeDir / ReactNativeWindowsDir values without
-  // each library's own fallback ever firing.
-  config = withDirectoryBuildProps(config);
 
   // TODO: We need a plugin to rename files like `myapp6.xcodeproj` to the
   //       actual filesafe name that the user requested. Some examples of

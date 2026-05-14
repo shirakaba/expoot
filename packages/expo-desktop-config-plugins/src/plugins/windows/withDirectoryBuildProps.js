@@ -68,21 +68,17 @@ function resolvePackageRelativePath(projectRoot, packageName, fallbackRelWin) {
       require.resolve(`${packageName}/package.json`, { paths: [projectRoot] }),
     );
   } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "MODULE_NOT_FOUND"
-    ) {
-      addWarningWindows(
-        "Directory.Build.props",
-        `Could not resolve "${packageName}" from "${projectRoot}". ` +
-          `Falling back to "${fallbackRelWin}" — install node_modules ` +
-          `(or rerun prebuild without --no-install) so the resolved path can be written instead.`,
-      );
-      return fallbackRelWin;
+    if (!(error instanceof Error) || !("code" in error) || error.code !== "MODULE_NOT_FOUND") {
+      throw error;
     }
-    throw error;
+
+    addWarningWindows(
+      "Directory.Build.props",
+      `Could not resolve "${packageName}" from "${projectRoot}". ` +
+        `Falling back to "${fallbackRelWin}" — install node_modules ` +
+        `(or rerun prebuild without --no-install) so the resolved path can be written instead.`,
+    );
+    return fallbackRelWin;
   }
 
   return path.win32.relative(projectRoot, resolvedAbs);
@@ -108,11 +104,6 @@ function buildDirectoryBuildProps({ reactNativeRel, reactNativeWindowsRel }) {
 }
 
 /** @param {string} value */
-function ensureTrailingBackslash(value) {
-  return value.endsWith("\\") ? value : `${value}\\`;
-}
-
-/** @param {string} value */
 function escapeXml(value) {
   return value
     .replaceAll("&", "&amp;")
@@ -120,4 +111,9 @@ function escapeXml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
+}
+
+/** @param {string} value */
+function ensureTrailingBackslash(value) {
+  return value.endsWith("\\") ? value : `${value}\\`;
 }

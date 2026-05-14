@@ -8,18 +8,24 @@ const { addWarningWindows } = require("../macos/_utils/warnings");
  * @returns {import("@expo/config-plugins").ExportedConfig}
  */
 function withReactNativeDirs(config, props = {}) {
-  return withVcxproj(config, (config) => {
-    config = updateReactNativeWindowsProps(config);
+  config = withVcxproj(config, (config) => updateProjProps(config));
 
-    return config;
-  });
+  // Writes Directory.Build.props at the project root so every native project
+  // under the tree — including node_modules/<lib>/windows/<sub>/<sub>.vcxproj
+  // — picks up the same ReactNativeDir / ReactNativeWindowsDir values without
+  // each library's own fallback ever firing.
+  config = withDirectoryBuildProps(config);
+
+  return config;
 }
 module.exports.withReactNativeDirs = withReactNativeDirs;
 
 /**
+ * Update the ReactNativeDir and ReactNativeWindowsDir props in a .vcxproj or
+ * .wapproj.
  * @param {import("@expo/config-plugins").ExportedConfigWithProps<ReturnType<import("fast-xml-parser").XMLParser["parse"]>>} config
  */
-function updateReactNativeWindowsProps(config) {
+function updateProjProps(config) {
   // 1. Find <Project>
   if (!Array.isArray(config.modResults)) {
     throw new Error("Expected parsed XML to be an array.");
