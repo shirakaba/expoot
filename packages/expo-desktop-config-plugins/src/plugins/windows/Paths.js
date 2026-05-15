@@ -71,6 +71,40 @@ function getVcxprojFilePath({ projectRoot, filesafeName }) {
 }
 
 /**
+ * Gets the path to MyApp.Package.wapproj (where "MyApp" may vary based on
+ * filesafeName).
+ *
+ * @param {object} params
+ * @param {string} params.projectRoot
+ * @param {string | undefined} params.filesafeName - An explicit filesafe name,
+ * otherwise will try to infer it based on the name of the vcxproj.
+ */
+function getWapprojFilePath({ projectRoot, filesafeName }) {
+  const [using, ...extra] = globWithInferredFilesafeName({
+    extension: ".Package.wapproj",
+    filesafeName,
+    projectRoot,
+  });
+  if (!using) {
+    throw new UnexpectedError(
+      `Could not locate a valid MyApp.Package.wapproj at root: "${projectRoot}"`,
+    );
+  }
+
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: "app-wapproj",
+      fileName: "MyApp.Package.wapproj",
+      projectRoot,
+      using,
+      extra,
+    });
+  }
+
+  return using;
+}
+
+/**
  * Globs for a file `${filesafeName}${extension}`, e.g. "MyApp.cpp". Accepts
  * either an explicit filesafe name (e.g. "MyApp"), or `undefined`, in which
  * case it infers the filesafe name from the vcxproj (e.g. "MyApp.vcxproj" ->
@@ -86,7 +120,7 @@ function getVcxprojFilePath({ projectRoot, filesafeName }) {
 function globWithInferredFilesafeName({ extension, filesafeName, projectRoot }) {
   if (filesafeName) {
     return withSortedGlobResult(
-      globSync(`windows/${filesafeName}/${filesafeName}${extension}`, {
+      globSync(`windows/${filesafeName}?(.Package)/${filesafeName}${extension}`, {
         absolute: true,
         cwd: projectRoot,
         ignore: ignoredPaths,
@@ -174,3 +208,4 @@ exports.getAppCppFilePath = getAppCppFilePath;
 exports.getFileInfo = getFileInfo;
 exports.getLanguage = getLanguage;
 exports.getVcxprojFilePath = getVcxprojFilePath;
+exports.getWapprojFilePath = getWapprojFilePath;

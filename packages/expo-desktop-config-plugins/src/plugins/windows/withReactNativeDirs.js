@@ -1,6 +1,6 @@
 const path = require("node:path");
-const { withVcxproj } = require("./windows-plugins");
-const { addWarningWindows } = require("../macos/_utils/warnings");
+const { withVcxproj, withWapproj } = require("./windows-plugins");
+const { withDirectoryBuildProps } = require("./withDirectoryBuildProps");
 
 /**
  * @param {import("@expo/config-types").ExpoConfig} config
@@ -9,6 +9,7 @@ const { addWarningWindows } = require("../macos/_utils/warnings");
  */
 function withReactNativeDirs(config, props = {}) {
   config = withVcxproj(config, (config) => updateProjProps(config));
+  config = withWapproj(config, (config) => updateProjProps(config));
 
   // Writes Directory.Build.props at the project root so every native project
   // under the tree — including node_modules/<lib>/windows/<sub>/<sub>.vcxproj
