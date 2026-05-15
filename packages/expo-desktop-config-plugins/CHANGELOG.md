@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.26
+
+### Patch Changes
+
+- Populate ReactNativeDir and ReactNativeWindowsDir in both MyApp.Package.wapproj and Directory.Build.Props
+
 ## 1.1.25
 
 ### Patch Changes
