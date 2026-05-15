@@ -1,5 +1,11 @@
 # expo-desktop
 
+## 0.1.30
+
+### Patch Changes
+
+- Fix template strings in NuGet config
+
 ## 0.1.29
 
 ### Patch Changes
