@@ -1,5 +1,14 @@
 # expo-desktop
 
+## 0.1.29
+
+### Patch Changes
+
+- Fix polyfill and resolution of ReactNativeDir and ReactNativeWindowsDir
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.27
+  - expo-desktop-prebuild-config@1.0.13
+
 ## 0.1.28
 
 ### Patch Changes

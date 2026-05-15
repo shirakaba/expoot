@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.27
+
+### Patch Changes
+
+- Fix polyfill and resolution of ReactNativeDir and ReactNativeWindowsDir
+
 ## 1.1.26
 
 ### Patch Changes

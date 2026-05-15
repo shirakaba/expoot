@@ -1,5 +1,11 @@
 # expo-desktop-modules-core
 
+## 54.0.6
+
+### Patch Changes
+
+- Fix polyfill and resolution of ReactNativeDir and ReactNativeWindowsDir
+
 ## 54.0.5
 
 ### Patch Changes
