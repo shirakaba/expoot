@@ -101,7 +101,7 @@ function updateProjProps(config) {
   );
   const reactNativeRel = `$(SolutionDir)${path.win32.relative(config.modRequest.platformProjectRoot, reactNativeAbs)}`;
   const ReactNativeDirElementUpdated = {
-    ReactNativeDir: [{ "#text": reactNativeRel }],
+    ReactNativeDir: [{ "#text": `${reactNativeRel}${path.win32.sep}` }],
     ":@": { "@_Condition": "'$(ReactNativeDir)' == ''" },
   };
   if (ReactNativeDirElementIndex === -1) {
