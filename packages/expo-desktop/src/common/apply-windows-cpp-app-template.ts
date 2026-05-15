@@ -37,7 +37,7 @@ export async function applyWindowsCppAppTemplateAsync(
 
   await renameCppAppPathsAsync(windowsRoot, name.filesafeName);
   await renderMustacheUnderWindowsAsync(windowsRoot, replacements);
-  await finalizeWindowsCppTemplateArtifacts(projectRoot);
+  await finalizeWindowsCppTemplateArtifacts(projectRoot, replacements);
 }
 
 async function looksLikeCppAppTemplateAsync(windowsRoot: string): Promise<boolean> {
@@ -318,34 +318,62 @@ async function renderMustacheUnderWindowsAsync(
       if (isProbablyBinaryFile(absoluteFilePath)) {
         return;
       }
-      let content: string;
-      try {
-        content = await fs.readFile(absoluteFilePath, "utf8");
-      } catch (error) {
-        if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
-          throw error;
-        }
-        return;
-      }
-      if (!content.includes("{{")) {
-        return;
-      }
-
-      const useCRLF = content.includes("\r\n");
-      const adjustedView = adjustReplacementStringsForLineEndings(view, useCRLF);
-      const rendered = mustache.render(content, adjustedView);
-      if (rendered !== content) {
-        await fs.writeFile(absoluteFilePath, rendered, "utf8");
-      }
+      await renderMustacheInFileIfNeeded(absoluteFilePath, view);
     }),
   );
 }
 
-async function finalizeWindowsCppTemplateArtifacts(projectRoot: string): Promise<void> {
+/**
+ * Render mustache tags inside `filePath` in place, mirroring the behaviour of
+ * react-native-windows' generator-common `resolveContents()`. Skips files that
+ * don't exist, files that don't contain any `{{` (no-op fast path), and
+ * preserves the file's existing line endings (LF vs CRLF).
+ *
+ * @see https://github.com/microsoft/react-native-windows/blob/main/packages/%40react-native-windows/cli/src/generator-common/index.ts
+ */
+async function renderMustacheInFileIfNeeded(
+  filePath: string,
+  view: Record<string, unknown>,
+): Promise<void> {
+  let content: string;
+  try {
+    content = await fs.readFile(filePath, "utf8");
+  } catch (error) {
+    if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+      throw error;
+    }
+    return;
+  }
+  if (!content.includes("{{")) {
+    return;
+  }
+
+  const useCRLF = content.includes("\r\n");
+  const adjustedView = adjustReplacementStringsForLineEndings(view, useCRLF);
+  const rendered = mustache.render(content, adjustedView);
+  if (rendered !== content) {
+    await fs.writeFile(filePath, rendered, "utf8");
+  }
+}
+
+async function finalizeWindowsCppTemplateArtifacts(
+  projectRoot: string,
+  view: Record<string, unknown>,
+): Promise<void> {
   await renameIfExistsPreferDest(
     path.join(projectRoot, "NuGet_Config"),
     path.join(projectRoot, "NuGet.config"),
   );
+
+  // The cpp-app template places NuGet_Config (renamed to NuGet.config above) at
+  // the project root rather than under windows/, so renderMustacheUnderWindowsAsync
+  // skips it. Render its mustache tags here so that sections like
+  // {{#addReactNativePublicAdoFeed}}…{{/addReactNativePublicAdoFeed}} don't leak
+  // into the final config and trip up NuGet restore (which manifests downstream
+  // as MIDL2025 "syntax error near 'namespace'" in libraries' .idl files,
+  // missing `CppWinRTIncludes.h`, and `EntryPointExe '<App>.exe' was not found`
+  // packaging errors).
+  await renderMustacheInFileIfNeeded(path.join(projectRoot, "NuGet.config"), view);
 
   const version = packageJson.version;
   const banner = `<!-- This project was created with expo-desktop ${version} -->`;
