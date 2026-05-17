@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.8
+
+### Patch Changes
+
+- Fix ReactNativeWindowsDir resolution order
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.8
+
 ## 54.0.7
 
 ### Patch Changes

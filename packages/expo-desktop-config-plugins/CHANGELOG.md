@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.29
+
+### Patch Changes
+
+- Fix ReactNativeWindowsDir resolution order
+
 ## 1.1.28
 
 ### Patch Changes
