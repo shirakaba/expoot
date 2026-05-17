@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.7
+
+### Patch Changes
+
+- Remove the need for expo-polyfill.windows.js
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.7
+
 ## 54.0.6
 
 ### Patch Changes

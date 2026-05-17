@@ -1,5 +1,11 @@
 # expo-desktop-config-plugins
 
+## 1.1.28
+
+### Patch Changes
+
+- Remove the need for expo-polyfill.windows.js
+
 ## 1.1.27
 
 ### Patch Changes

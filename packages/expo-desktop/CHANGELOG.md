@@ -1,5 +1,14 @@
 # expo-desktop
 
+## 0.1.31
+
+### Patch Changes
+
+- Remove the need for expo-polyfill.windows.js
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.28
+  - expo-desktop-prebuild-config@1.0.14
+
 ## 0.1.30
 
 ### Patch Changes
