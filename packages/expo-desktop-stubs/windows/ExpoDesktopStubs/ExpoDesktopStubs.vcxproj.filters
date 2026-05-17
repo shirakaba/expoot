@@ -24,9 +24,6 @@
     <ClInclude Include="ExpoAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NativeUnimoduleProxy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ExpoDesktopStubs.h">
       <Filter>Header Files</Filter>
     </ClInclude>

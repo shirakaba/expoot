@@ -12,11 +12,11 @@
 #include "NativeModules.h"
 
 
-namespace winrt::ExpoDesktopStubs {
+namespace winrt::ExpoDesktopModulesCore {
 
 REACT_TURBO_MODULE(NativeUnimoduleProxy);
 struct NativeUnimoduleProxy {
-  using ModuleSpec = ExpoDesktopStubsCodegen::NativeUnimoduleProxySpec;
+  using ModuleSpec = ExpoDesktopModulesCoreCodegen::NativeUnimoduleProxySpec;
 };
 
-} // namespace winrt::ExpoDesktopStubs
+} // namespace winrt::ExpoDesktopModulesCore

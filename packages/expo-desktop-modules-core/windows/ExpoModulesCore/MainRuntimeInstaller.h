@@ -23,7 +23,7 @@ namespace jsi = facebook::jsi;
 
 namespace winrt::ExpoDesktopModulesCore {
 
-REACT_TURBO_MODULE(ExpoMainRuntimeInstaller);
+REACT_EAGER_TURBO_MODULE(ExpoMainRuntimeInstaller);
 struct ExpoMainRuntimeInstaller {
   using ModuleSpec = ExpoDesktopModulesCoreCodegen::ExpoMainRuntimeInstallerSpec;
 
@@ -32,12 +32,78 @@ struct ExpoMainRuntimeInstaller {
   REACT_INIT(Initialize)
   // https://github.com/expo/expo/blob/95684e9c673859cd1a6ba1243d4ee00e0f09591d/packages/expo-modules-core/android/src/main/cpp/installers/MainRuntimeInstaller.cpp#L123
   void Initialize(winrt::Microsoft::ReactNative::ReactContext const &reactContext, facebook::jsi::Runtime &runtime) noexcept {
-    auto mainObject = std::make_shared<facebook::jsi::Object>(runtime);
-    auto global = runtime.global();
+    jsi::Object global = runtime.global();
 
+    // All of this work below is to set up just enough of the global.expo object such that the React Native Windows app can
+    // survive the `require("expo").registerRootComponent(App)` call at app startup, as the latter triggers various side-effects
+    // from Expo.fx.tsx, such as accessing global.expo.modules.NativeModulesProxy, global.nativeModuleProxy.EventEmitter, and
+    // global.nativeModuleProxy.ExpoAsset:
+    // https://github.com/expo/expo/blob/sdk-54/packages/expo/src/Expo.fx.tsx
+    //
+    // Concretely, without this stub, the following warning messages will be logged at app launch:
+    // >  WARN  The "EXNativeModulesProxy" native module is not exported through NativeModules; verify that expo-modules-core's native code is linked properly
+    // >  WARN  No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?
+
+    // We need to set up global.expo.modules in just the right shape for expo-modules-core to build its NativeModulesProxy, as follows:
+    // - expo-modules-core builds up a fileprivate `const NativeModulesProxy: Record<string, ProxyNativeModule> = {}`.
+    // - It does so by iterating over `global.expo?.modules?.NativeModulesProxy ?? global.nativeModuleProxy.NativeUnimoduleProxy`.
+    //   - In other words, it iterates over the new JSI proxy, falling back to the (deprecated) legacy proxy if necessary.
+    // - It's still necessary for the legacy proxy to exist, as it doesn't even check for a JSI proxy if the legacy one is missing.
+    // - Thus, we init an empty NativeUnimoduleProxy to satisfy that check.
+    // https://github.com/expo/expo/blob/sdk-54/packages/expo-modules-core/src/NativeModulesProxy.native.ts
+
+    // /* Lazy-init these modules: */
+    // global.nativeModuleProxy.ExpoMainRuntimeInstaller;
+    // global.nativeModuleProxy.NativeUnimoduleProxy;
+    // global.nativeModuleProxy.ExpoAsset;
+    jsi::Object nativeModuleProxy = global.getPropertyAsObject(runtime, "nativeModuleProxy");
+    jsi::Object NativeUnimoduleProxy = nativeModuleProxy.getPropertyAsObject(runtime, "NativeUnimoduleProxy");
+    jsi::Object ExpoAsset = nativeModuleProxy.getPropertyAsObject(runtime, "ExpoAsset");
+
+    // Stub this module:
+    jsi::Object ExponentConstants = jsi::Object(runtime);
+
+    // /*
+    //  * Build this stub. Reference implementations for NativeModulesProxy:
+    //  * - iOS:
+    //  *   - NativeUnimoduleProxy: https://github.com/expo/expo/blob/sdk-54/packages/expo-modules-core/ios/Legacy/NativeModulesProxy/NativeModulesProxyModule.swift
+    //  *   - NativeModulesProxy: https://github.com/expo/expo/blob/sdk-54/packages/expo-modules-core/ios/Legacy/NativeModulesProxy/EXNativeModulesProxy.mm
+    //  * - Android:
+    //  *   - NativeUnimoduleProxy: https://github.com/expo/expo/blob/sdk-54/packages/expo-modules-core/android/src/main/java/expo/modules/adapters/react/NativeModulesProxy.java
+    //  *   - NativeModulesProxy: https://github.com/expo/expo/blob/sdk-54/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt
+    //  */
+    // globalThis.expo.modules = {
+    //   ExpoAsset,
+    //   ExponentConstants,
+    //   NativeModulesProxy: {
+    //     exportedMethods: {
+    //       ExpoAsset: [],
+    //       ExponentConstants: [],
+    //     },
+    //     modulesConstants: {
+    //       ExpoAsset: [],
+    //       ExponentConstants: [],
+    //     },
+    //   },
+    // };
+    jsi::Object expoModules = jsi::Object(runtime);
+    jsi::Object NativeModulesProxy = jsi::Object(runtime);
+    jsi::Object exportedMethods = jsi::Object(runtime);
+    jsi::Object modulesConstants = jsi::Object(runtime);
+    exportedMethods.setProperty(runtime, "ExpoAsset", jsi::Array(runtime, 0));
+    exportedMethods.setProperty(runtime, "ExponentConstants", jsi::Array(runtime, 0));
+    modulesConstants.setProperty(runtime, "ExpoAsset", jsi::Array(runtime, 0));
+    modulesConstants.setProperty(runtime, "ExponentConstants", jsi::Array(runtime, 0));
+    NativeModulesProxy.setProperty(runtime, "exportedMethods", exportedMethods);
+    NativeModulesProxy.setProperty(runtime, "modulesConstants", modulesConstants);
+    expoModules.setProperty(runtime, "ExpoAsset", ExpoAsset);
+    expoModules.setProperty(runtime, "ExponentConstants", ExponentConstants);
+    expoModules.setProperty(runtime, "NativeModulesProxy", NativeModulesProxy);
+
+    std::shared_ptr<jsi::Object> descriptorValue = std::make_shared<facebook::jsi::Object>(runtime);
+    descriptorValue.get()->setProperty(runtime, "modules", expoModules);
     jsi::Object descriptor = expo::JavaScriptObject::preparePropertyDescriptor(runtime, 1 << 1);
-    descriptor.setProperty(runtime, "value", jsi::Value(runtime, *mainObject));
-
+    descriptor.setProperty(runtime, "value", jsi::Value(runtime, *descriptorValue));
     expo::common::defineProperty(
       runtime,
       &global,

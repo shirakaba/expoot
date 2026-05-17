@@ -119,6 +119,7 @@
     <ClInclude Include="ExpoModulesCore.h" />
     <ClInclude Include="JavaScriptObject.h" />
     <ClInclude Include="MainRuntimeInstaller.h" />
+    <ClInclude Include="NativeUnimoduleProxy.h" />
     <ClInclude Include="ReactPackageProvider.h">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClInclude>

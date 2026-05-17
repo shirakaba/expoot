@@ -30,6 +30,9 @@
     <ClInclude Include="MainRuntimeInstaller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NativeUnimoduleProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>

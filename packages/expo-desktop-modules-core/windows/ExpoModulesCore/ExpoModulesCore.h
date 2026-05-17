@@ -4,3 +4,4 @@
 #pragma once
 
 #include "MainRuntimeInstaller.h"
+#include "NativeUnimoduleProxy.h"
