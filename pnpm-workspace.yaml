@@ -48,6 +48,29 @@ catalogs:
     expo: ^55.0.17
     react: 19.2.0
     react-native: 0.83.6
+  # Expo skipped from 0.83 (SDK 55) to 0.85 (SDK 56). The newer of the two may
+  # be our least bad option for 0.84.
+  # https://github.com/expo/expo/blob/sdk-56/templates/expo-template-bare-minimum/package.json
+  react-native-84:
+    "@expo/config": ~56.0.0-preview.12
+    "@expo/config-plugins": ^56.0.5
+    "@expo/config-types": ^56.0.4
+    "@expo/prebuild-config": ^56.0.8
+    "@react-native/metro-config": ~0.84.1
+    "@types/react": ~19.2.0
+    expo: ~56.0.0-preview.12
+    react: 19.2.3
+    react-native: 0.84.1
+  react-native-85:
+    "@expo/config": ~56.0.0-preview.12
+    "@expo/config-plugins": ^56.0.5
+    "@expo/config-types": ^56.0.4
+    "@expo/prebuild-config": ^56.0.8
+    "@react-native/metro-config": ~0.84.1
+    "@types/react": ~19.2.0
+    expo: ~56.0.0-preview.12
+    react: 19.2.3
+    react-native: 0.85.3
 
 # Formerly onlyBuiltDependencies/neverBuiltDependencies/ignoredBuiltDependencies
 allowBuilds:
