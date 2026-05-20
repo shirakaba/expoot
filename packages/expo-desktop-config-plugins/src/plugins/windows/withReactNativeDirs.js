@@ -1,4 +1,4 @@
-const path = require("node:path");
+const { glob } = require("glob");
 const { withVcxproj, withWapproj } = require("./windows-plugins");
 const { withDirectoryBuildProps } = require("./withDirectoryBuildProps");
 
@@ -22,11 +22,11 @@ function withReactNativeDirs(config, props = {}) {
 module.exports.withReactNativeDirs = withReactNativeDirs;
 
 /**
- * Update the ReactNativeDir and ReactNativeWindowsDir props in a .vcxproj or
- * .wapproj.
+ * Update the ReactNativeDir, ReactNativeWindowsDir, and BundleEntryFile props
+ * in a .vcxproj or .wapproj.
  * @param {import("@expo/config-plugins").ExportedConfigWithProps<ReturnType<import("fast-xml-parser").XMLParser["parse"]>>} config
  */
-function updateProjProps(config) {
+async function updateProjProps(config) {
   // 1. Find <Project>
   if (!Array.isArray(config.modResults)) {
     throw new Error("Expected parsed XML to be an array.");
@@ -58,18 +58,14 @@ function updateProjProps(config) {
   const ReactNativeWindowsDirElementIndex = ReactNativeWindowsProps.findIndex(
     (element) => "ReactNativeWindowsDir" in element,
   );
-  const reactNativeWindowsAbs = path.dirname(
-    require.resolve("react-native-windows/package.json", {
-      paths: [config.modRequest.projectRoot],
-    }),
-  );
-  const reactNativeWindowsRel = `$(SolutionDir)${path.win32.relative(
-    config.modRequest.platformProjectRoot,
-    reactNativeWindowsAbs,
-  )}`;
 
   const ReactNativeWindowsDirElementUpdated = {
-    ReactNativeWindowsDir: [{ "#text": reactNativeWindowsRel }],
+    ReactNativeWindowsDir: [
+      {
+        "#text":
+          "$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'node_modules\\react-native-windows\\package.json'))\\node_modules\\react-native-windows\\",
+      },
+    ],
     ":@": { "@_Condition": "'$(ReactNativeWindowsDir)' == ''" },
   };
   if (ReactNativeWindowsDirElementIndex === -1) {
@@ -94,14 +90,13 @@ function updateProjProps(config) {
   const ReactNativeDirElementIndex = ReactNativeWindowsProps.findIndex(
     (element) => "ReactNativeDir" in element,
   );
-  const reactNativeAbs = path.dirname(
-    require.resolve("react-native/package.json", {
-      paths: [config.modRequest.projectRoot],
-    }),
-  );
-  const reactNativeRel = `$(SolutionDir)${path.win32.relative(config.modRequest.platformProjectRoot, reactNativeAbs)}`;
   const ReactNativeDirElementUpdated = {
-    ReactNativeDir: [{ "#text": `${reactNativeRel}${path.win32.sep}` }],
+    ReactNativeDir: [
+      {
+        "#text":
+          "$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), 'node_modules\\react-native\\package.json'))\\node_modules\\react-native\\",
+      },
+    ],
     ":@": { "@_Condition": "'$(ReactNativeDir)' == ''" },
   };
   if (ReactNativeDirElementIndex === -1) {
@@ -118,7 +113,57 @@ function updateProjProps(config) {
     ReactNativeWindowsProps.splice(ReactNativeDirElementIndex, 1, ReactNativeDirElementUpdated);
   }
 
-  // 5. Resolve whitespace
+  // 5. Ensure there is a <BundleEntryFile> element.
+  const BundleEntryFileElementIndex = ReactNativeWindowsProps.findIndex(
+    (element) => "BundleEntryFile" in element,
+  );
+
+  let bundleEntryFile = "index.ts";
+  try {
+    // Seems to order candidates as:
+    // [
+    //   "index.windows.tsx",
+    //   "index.windows.ts",
+    //   "index.windows.jsx",
+    //   "index.windows.js",
+    //   "index.tsx",
+    //   "index.ts",
+    //   "index.jsx",
+    //   "index.js",
+    // ]
+    const candidates = await glob("index?(.windows).{ts,tsx,js,jsx}", {
+      cwd: config.modRequest.projectRoot,
+    });
+
+    bundleEntryFile = candidates.at(0) ?? bundleEntryFile;
+  } catch (error) {
+    console.warn(
+      "Unable to detect an index?(.windows).{ts,tsx,js,jsx} file in the root of the project, so will fall back to a <BundleEntryFile> value to 'index.ts'.",
+      error,
+    );
+  }
+
+  // It's relative to the projectRoot, not platformProjectRoot, as shown here:
+  // https://github.com/jurocha-ms/react-native-windows/blob/49ad562b0f2c9fb0e00853bd6db22fc88f8c00fd/packages/integration-test-app/windows/integrationtest/integrationtest.vcxproj#L24
+  const BundleEntryFileElementUpdated = {
+    BundleEntryFile: [{ "#text": bundleEntryFile }],
+    ":@": { "@_Condition": "'$(BundleEntryFile)' == ''" },
+  };
+  if (BundleEntryFileElementIndex === -1) {
+    // If there's insufficient whitespace after the last XML element, add some.
+    const precedingNode = ReactNativeWindowsProps.at(-1);
+    const whitespace = "\n    ";
+    if (typeof precedingNode?.["#text"] !== "string") {
+      ReactNativeWindowsProps.push({ "#text": whitespace });
+    } else {
+      precedingNode["#text"] = whitespace;
+    }
+    ReactNativeWindowsProps.push(BundleEntryFileElementUpdated);
+  } else {
+    ReactNativeWindowsProps.splice(BundleEntryFileElementIndex, 1, BundleEntryFileElementUpdated);
+  }
+
+  // 6. Resolve whitespace
   if (ReactNativeWindowsProps.length > lengthBefore) {
     // Ensure sufficient indentation after opening <PropertyGroup>.
     const leadingNode = ReactNativeWindowsProps.at(0);
