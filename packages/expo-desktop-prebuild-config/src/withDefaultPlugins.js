@@ -101,9 +101,9 @@ module.exports.withMacosExpoPlugins = withMacosExpoPlugins;
  *
  * Skips when there is no `windows/` folder (e.g. mobile-only workflows).
  *
- * @type {import("@expo/config-plugins").ConfigPlugin<{ displayName?: string }>}
+ * @type {import("@expo/config-plugins").ConfigPlugin<{ displayName?: string, bundleEntryFileCandidates?: Array<string> }>}
  */
-function withWindowsExpoPlugins(config, { displayName } = {}) {
+function withWindowsExpoPlugins(config, { displayName, bundleEntryFileCandidates } = {}) {
   const projectRoot = config._internal?.projectRoot;
   if (typeof projectRoot === "string" && !projectHasWindowsNativeTree(projectRoot)) {
     return config;
@@ -113,7 +113,9 @@ function withWindowsExpoPlugins(config, { displayName } = {}) {
     config.windows = {};
   }
 
-  return withPlugins(config, [[withExpoDesktop, { displayName: displayName ?? config.name }]]);
+  return withPlugins(config, [
+    [withExpoDesktop, { displayName: displayName ?? config.name, bundleEntryFileCandidates }],
+  ]);
 }
 module.exports.withWindowsExpoPlugins = withWindowsExpoPlugins;
 

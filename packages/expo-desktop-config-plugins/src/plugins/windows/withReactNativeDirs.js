@@ -1,21 +1,15 @@
-const { glob } = require("glob");
 const { withVcxproj, withWapproj } = require("./windows-plugins");
-const { withDirectoryBuildProps } = require("./withDirectoryBuildProps");
 
 /**
  * @param {import("@expo/config-types").ExpoConfig} config
- * @param {Record<string, never>} props
+ * @param {{ bundleEntryFileCandidates?: Array<string>; }} props
  * @returns {import("@expo/config-plugins").ExportedConfig}
  */
-function withReactNativeDirs(config, props = {}) {
-  config = withVcxproj(config, (config) => updateProjProps(config));
-  config = withWapproj(config, (config) => updateProjProps(config));
+function withReactNativeDirs(config, props) {
+  const bundleEntryFile = resolveBundleEntryFile(props.bundleEntryFileCandidates);
 
-  // Writes Directory.Build.props at the project root so every native project
-  // under the tree — including node_modules/<lib>/windows/<sub>/<sub>.vcxproj
-  // — picks up the same ReactNativeDir / ReactNativeWindowsDir values without
-  // each library's own fallback ever firing.
-  config = withDirectoryBuildProps(config);
+  config = withVcxproj(config, (config) => updateProjProps(config, { bundleEntryFile }));
+  config = withWapproj(config, (config) => updateProjProps(config, { bundleEntryFile }));
 
   return config;
 }
@@ -25,8 +19,9 @@ module.exports.withReactNativeDirs = withReactNativeDirs;
  * Update the ReactNativeDir, ReactNativeWindowsDir, and BundleEntryFile props
  * in a .vcxproj or .wapproj.
  * @param {import("@expo/config-plugins").ExportedConfigWithProps<ReturnType<import("fast-xml-parser").XMLParser["parse"]>>} config
+ * @param {{ bundleEntryFile?: string; }} props
  */
-async function updateProjProps(config) {
+function updateProjProps(config, { bundleEntryFile }) {
   // 1. Find <Project>
   if (!Array.isArray(config.modResults)) {
     throw new Error("Expected parsed XML to be an array.");
@@ -118,35 +113,10 @@ async function updateProjProps(config) {
     (element) => "BundleEntryFile" in element,
   );
 
-  let bundleEntryFile = "index.ts";
-  try {
-    // Seems to order candidates as:
-    // [
-    //   "index.windows.tsx",
-    //   "index.windows.ts",
-    //   "index.windows.jsx",
-    //   "index.windows.js",
-    //   "index.tsx",
-    //   "index.ts",
-    //   "index.jsx",
-    //   "index.js",
-    // ]
-    const candidates = await glob("index?(.windows).{ts,tsx,js,jsx}", {
-      cwd: config.modRequest.projectRoot,
-    });
-
-    bundleEntryFile = candidates.at(0) ?? bundleEntryFile;
-  } catch (error) {
-    console.warn(
-      "Unable to detect an index?(.windows).{ts,tsx,js,jsx} file in the root of the project, so will fall back to a <BundleEntryFile> value to 'index.ts'.",
-      error,
-    );
-  }
-
   // It's relative to the projectRoot, not platformProjectRoot, as shown here:
   // https://github.com/jurocha-ms/react-native-windows/blob/49ad562b0f2c9fb0e00853bd6db22fc88f8c00fd/packages/integration-test-app/windows/integrationtest/integrationtest.vcxproj#L24
   const BundleEntryFileElementUpdated = {
-    BundleEntryFile: [{ "#text": bundleEntryFile }],
+    BundleEntryFile: [{ "#text": bundleEntryFile ?? "index.ts" }],
     ":@": { "@_Condition": "'$(BundleEntryFile)' == ''" },
   };
   if (BundleEntryFileElementIndex === -1) {
@@ -179,4 +149,53 @@ async function updateProjProps(config) {
   }
 
   return config;
+}
+
+/**
+ * Resolves the best React Native Windows bundle entry file from a list of
+ * candidates.
+ *
+ * - Preference order (platform suffix): .windows > .native > (none)
+ * - File extension (ts/tsx/js/jsx) is treated as equal priority.
+ * - Candidates with non-Windows platform suffixes (.ios, .android, .macos) are
+ *   excluded.
+ *
+ * @param {string[]} [bundleEntryFileCandidates] - List of candidate filenames
+ * to evaluate.
+ * @returns {string} The highest-priority matching filename, or `"index.ts"` if
+ * none match.
+ */
+function resolveBundleEntryFile(bundleEntryFileCandidates) {
+  if (!bundleEntryFileCandidates) {
+    return "index.ts";
+  }
+
+  const platformSuffix = /(?:(\.windows|\.native|\.ios|\.android|\.macos))?\.(?:js|ts|jsx|tsx)$/;
+
+  /**
+   * @type {Record<string, number>}
+   * Priority order for React Native Windows entrypoint resolution.
+   * Lower index = higher priority.
+   */
+  const WINDOWS_PLATFORM_PRIORITY = {
+    ".windows": 0,
+    ".native": 1,
+    "": 2,
+  };
+
+  const sortedCandidates = bundleEntryFileCandidates
+    .filter((candidate) => {
+      const match = platformSuffix.exec(candidate);
+      if (!match) return false;
+      const suffix = match.at(1) ?? "";
+      // Keep only Windows-compatible candidates
+      return suffix === ".windows" || suffix === ".native" || suffix === "";
+    })
+    .sort((a, b) => {
+      const suffixA = platformSuffix.exec(a)?.at(1) ?? "";
+      const suffixB = platformSuffix.exec(b)?.at(1) ?? "";
+      return WINDOWS_PLATFORM_PRIORITY[suffixA] - WINDOWS_PLATFORM_PRIORITY[suffixB];
+    });
+
+  return sortedCandidates.at(0) ?? "index.ts";
 }

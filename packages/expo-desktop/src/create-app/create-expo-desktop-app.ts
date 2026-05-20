@@ -2,6 +2,7 @@ import type { ModPlatform } from "@expo/config-plugins";
 
 import { log, tasks } from "@clack/prompts";
 import { type } from "arktype";
+import { glob } from "glob";
 import { cyan, green, yellow } from "kleur/colors";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -111,11 +112,13 @@ export async function createExpoDesktopApp({
   if (localDev) {
     await addApplyConfigPluginsScript({ projectPath });
   }
+  const bundleEntryFileCandidates = await getBundleEntryFileCandidates({ projectPath });
   await applyConfigPlugins({
     projectRoot: projectPath,
     displayName: name.displayName,
     bundleIdentifier: name.rdns.replaceAll("_", "-"),
     platforms: ["macos", "windows"] as unknown as Array<ModPlatform>,
+    bundleEntryFileCandidates,
   });
   console.log(`${green("◆")}  Applied config plugins.\n`);
 
@@ -152,6 +155,33 @@ export async function createExpoDesktopApp({
 
   title("Adding Expo support to the Babel config…", { spacing: 1 });
   await writeBabelConfig({ projectPath });
+}
+
+async function getBundleEntryFileCandidates({ projectPath }: { projectPath: string }) {
+  try {
+    // Seems to order candidates as:
+    // [
+    //   "index.windows.tsx",
+    //   "index.windows.ts",
+    //   "index.windows.jsx",
+    //   "index.windows.js",
+    //   "index.tsx",
+    //   "index.ts",
+    //   "index.jsx",
+    //   "index.js",
+    // ]
+    const candidates = await glob("index?(.windows|.macos|.ios|.android|.native).{ts,tsx,js,jsx}", {
+      cwd: projectPath,
+    });
+
+    return candidates;
+  } catch (error) {
+    console.warn(
+      "Unable to detect an index?(.windows).{ts,tsx,js,jsx} file in the root of the project, so will fall back to a <BundleEntryFile> value to 'index.ts'.",
+      error,
+    );
+    return ["index.ts"];
+  }
 }
 
 async function createExpoApp({
@@ -782,6 +812,7 @@ async function addApplyConfigPluginsScript({ projectPath }: { projectPath: strin
   await fs.writeFile(
     path.resolve(projectPath, "apply-config-plugins.mjs"),
     `
+import { globSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -796,7 +827,23 @@ const info = {
   bundleIdentifier: "com.example.my-app-123",
   // @ts-expect-error Normally only accepts ios and android
   platforms: ["macos", "windows"],
+  bundleEntryFileCandidates: getBundleEntryFileCandidates({ projectPath: projectRoot }),
 };
+
+function getBundleEntryFileCandidates({ projectPath }) {
+  try {
+    const candidates = globSync("index{.windows,.macos,.ios,.android,.native,}.{ts,tsx,js,jsx}", {
+      cwd: projectPath,
+    });
+    return candidates;
+  } catch (error) {
+    console.warn(
+      "Unable to detect an index?(.windows).{ts,tsx,js,jsx} file in the root of the project, so will fall back to a <BundleEntryFile> value to 'index.ts'.",
+      error,
+    );
+    return ["index.ts"];
+  }
+}
 
 const withInternal = (config, internals) => {
   config._internal = {
