@@ -193,7 +193,9 @@ async function createExpoApp({
   await gen.next();
 
   // `npm create` drops flags meant for create-expo-app unless you add `--`; use
-  // `npx --yes` instead to forward args correctly and skip prompts.
+  // `npx --yes` instead to forward args correctly. Pass `--yes` to
+  // create-expo-app for non-interactive template selection; set `CI=true` in the
+  // child env so git-init inside an existing repo is skipped too.
   const command = packageManager === "npm" ? "npx" : packageManager;
   const args = [
     ...(packageManager === "npm" ? ["--yes", "create-expo-app"] : ["create", "expo-app"]),
@@ -215,8 +217,15 @@ async function createExpoApp({
         args,
         options: {
           stdio: "inherit",
-          // Suppresses npx/npm exec "Ok to proceed?" and similar yes/no prompts.
-          env: { npm_config_yes: "true" },
+          env: {
+            // Suppresses npx/npm exec "Ok to proceed?" and similar yes/no prompts.
+            npm_config_yes: "true",
+            // create-expo-app's `--yes` skips template/SDK prompts but not the
+            // "Skip initializing a new git repository?" confirm when cwd is
+            // inside an existing repo; that path only auto-skips when CI is set.
+            // https://github.com/expo/expo/blob/main/packages/create-expo/src/utils/git.ts
+            CI: "true",
+          },
         },
         debugLogDir: projectPath,
       }),
