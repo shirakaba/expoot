@@ -1,5 +1,14 @@
 # expo-desktop
 
+## 0.1.33
+
+### Patch Changes
+
+- Improve handling of entrypoint in Windows projects, and stop create-expo-app jamming on nested git projects
+- Updated dependencies
+  - expo-desktop-config-plugins@1.1.30
+  - expo-desktop-prebuild-config@1.0.16
+
 ## 0.1.32
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # expo-desktop-stubs
 
+## 54.0.9
+
+### Patch Changes
+
+- Improve handling of entrypoint in Windows projects, and stop create-expo-app jamming on nested git projects
+- Updated dependencies
+  - expo-desktop-modules-core@54.0.9
+
 ## 54.0.8
 
 ### Patch Changes
