@@ -228,7 +228,9 @@ async function createExpoApp({
   // child env so git-init inside an existing repo is skipped too.
   const command = packageManager === "npm" ? "npx" : packageManager;
   const args = [
-    ...(packageManager === "npm" ? ["--yes", "create-expo-app"] : ["create", "expo-app"]),
+    ...(packageManager === "npm"
+      ? ["--yes", "create-expo-app@latest"]
+      : ["create", "expo-app@latest"]),
     name.filesafeName,
     "--yes",
     "--template",
