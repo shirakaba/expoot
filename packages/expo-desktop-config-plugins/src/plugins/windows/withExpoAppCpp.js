@@ -24,14 +24,14 @@ function withExpoAppCpp(config, props = {}) {
     }
 
     try {
-      config.modResults.contents = rewriteJavaScriptBundleFile(config.modResults.contents, {
-        bundleFileName: ".expo/.virtual-metro-entry",
+      config.modResults.contents = addDebugBundlePath(config.modResults.contents, {
+        bundlePath: ".expo/.virtual-metro-entry",
       });
     } catch (error) {
       if (error?.code === "ERR_NO_MATCH") {
         addWarningWindows(
           "windows",
-          `[with-expo-app-cpp] Cannot set JavaScript bundle root because the App.cpp did not contain the expected "settings.JavaScriptBundleFile(...)" call.`,
+          `[with-expo-app-cpp] Cannot set the DebugBundlePath because the App.cpp did not contain the expected "#if BUNDLE" pattern.`,
         );
       } else {
         throw error;
@@ -116,17 +116,24 @@ function rewriteComponentName(contents, { componentName }) {
 }
 
 /**
+ * Configures the path that is fetched from Metro during non-bundled builds.
+ *
+ * This handles both cases:
+ * 1. the case where a user is running a non-bundled build;
+ * 2. the case where a user is running a bundled build, but uses the dev menu to
+ *    switch to loading from Metro instead.
+ *
  * @param {string} contents
  * @param {object} props
- * @param {string} props.bundleFileName
+ * @param {string} props.bundlePath
  * @returns {string}
  */
-function rewriteJavaScriptBundleFile(contents, { bundleFileName }) {
-  const escaped = escapeCppWideString(bundleFileName);
+function addDebugBundlePath(contents, { bundlePath }) {
+  const escaped = escapeCppWideString(bundlePath);
 
   return replaceOrThrow(
     contents,
-    /settings\.JavaScriptBundleFile\(L"[^"]*"\);/,
-    `settings.JavaScriptBundleFile(L"${escaped}");`,
+    /(?:\s*settings\.DebugBundlePath\(L"[^"]*"\);\s*)?#if BUNDLE/m,
+    `\n  settings.DebugBundlePath(L"${escaped}");\n\n#if BUNDLE`,
   );
 }
