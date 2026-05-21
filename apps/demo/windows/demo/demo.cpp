@@ -40,6 +40,8 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   // Register any native modules defined within this app project
   settings.PackageProviders().Append(winrt::make<CompReactPackageProvider>());
 
+  settings.DebugBundlePath(L".expo/.virtual-metro-entry");
+
 #if BUNDLE
   // Load the JS bundle from a file (not Metro):
   // Set the path (on disk) where the .bundle file is located
@@ -50,8 +52,8 @@ _Use_decl_annotations_ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE, PSTR 
   settings.UseFastRefresh(false);
 #else
   // Load the JS bundle from Metro
-  settings.JavaScriptBundleFile(L".expo/.virtual-metro-entry");
-// Enable hot reload
+  settings.JavaScriptBundleFile(L"index");
+  // Enable hot reload
   settings.UseFastRefresh(true);
 #endif
 #if _DEBUG
