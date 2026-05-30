@@ -39,7 +39,7 @@ export async function createExpoDesktopApp({
     filesafeName: string;
     rdns: string;
   };
-  packageManager: "npm" | "bun" | "pnpm";
+  packageManager: "npm" | "bun" | "pnpm" | "yarn";
   templates: TemplateSelection;
   versions: {
     minor: number;
@@ -196,7 +196,7 @@ async function createExpoApp({
     filesafeName: string;
     rdns: string;
   };
-  packageManager: "npm" | "bun" | "pnpm";
+  packageManager: "npm" | "bun" | "pnpm" | "yarn";
   versions: {
     minor: number;
     expoMajor: number;
@@ -227,10 +227,11 @@ async function createExpoApp({
   // create-expo-app for non-interactive template selection; set `CI=true` in the
   // child env so git-init inside an existing repo is skipped too.
   const command = packageManager === "npm" ? "npx" : packageManager;
+  let packageManagerArgs = ["create", "expo-app@latest"];
+  if (packageManager === "npm") packageManagerArgs = ["--yes", "create-expo-app@latest"];
+  if (packageManager === "yarn") packageManagerArgs = ["create", "expo-app"];
   const args = [
-    ...(packageManager === "npm"
-      ? ["--yes", "create-expo-app@latest"]
-      : ["create", "expo-app@latest"]),
+    ...packageManagerArgs,
     name.filesafeName,
     "--yes",
     "--template",
@@ -487,7 +488,7 @@ async function npmInstall({
   /** WIP monorepo awareness. */
   asNewWorkspace: boolean;
   cwd: string;
-  packageManager: "npm" | "bun" | "pnpm";
+  packageManager: "npm" | "bun" | "pnpm" | "yarn";
 }) {
   const command = packageManager;
   const args = ["install"];
@@ -548,7 +549,7 @@ async function runPrebuildMobile({
   packageManager,
   projectPath,
 }: {
-  packageManager: "npm" | "bun" | "pnpm";
+  packageManager: "npm" | "bun" | "pnpm" | "yarn";
   projectPath: string;
 }) {
   const { args, command } = packageManagerExec(packageManager);
