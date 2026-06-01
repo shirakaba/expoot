@@ -941,7 +941,7 @@ function logProjectReady({
     `- ${packageManager} run android`,
     `- ${packageManager} run ios`,
     `- ${packageManager} run web`,
-    ""
+    "",
   ];
 
   log.success(lines.join("\n"), { withGuide: false });
