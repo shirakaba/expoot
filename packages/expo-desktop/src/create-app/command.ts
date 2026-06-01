@@ -66,7 +66,7 @@ export async function newExpoDesktopProject(args: {
     `Will use versions: ${green(`react-native@${versions.mobile}`)}, ${green(`react-native-macos@${versions.macos}`)}, and ${green(`react-native-windows@${versions.windows}`)}, with ${green(`Expo ${versions.expoMajor}`)}.`,
   );
 
-  const packageManager = await select<"npm" | "bun" | "pnpm">({
+  const packageManager = await select<"npm" | "bun" | "pnpm" | "yarn">({
     message: "What package manager shall we install with?",
     options: [
       {
@@ -75,6 +75,7 @@ export async function newExpoDesktopProject(args: {
       },
       { value: "bun", label: `Bun${platform === "darwin" ? " (recommended)" : ""}` },
       { value: "pnpm", label: `pnpm${platform === "win32" ? " (recommended)" : ""}` },
+      { value: "yarn", label: "yarn" },
     ],
     initialValue: platform === "darwin" ? "bun" : platform === "win32" ? "pnpm" : "npm",
   });
