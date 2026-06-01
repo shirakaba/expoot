@@ -155,6 +155,8 @@ export async function createExpoDesktopApp({
 
   title("Adding Expo support to the Babel config…", { spacing: 1 });
   await writeBabelConfig({ projectPath });
+
+  logProjectReady({ cdPath: name.filesafeName, packageManager });
 }
 
 async function getBundleEntryFileCandidates({ projectPath }: { projectPath: string }) {
@@ -918,4 +920,29 @@ await applyConfigPlugins(info);
     `.trim() + "\n",
     "utf-8",
   );
+}
+
+function logProjectReady({
+  cdPath,
+  packageManager,
+}: {
+  cdPath: string;
+  packageManager: "npm" | "bun" | "pnpm";
+}) {
+  const lines = [
+    "✅ Your project is ready!",
+    "",
+    `To run your project, navigate to the directory and run one of the following ${packageManager} commands.`,
+    "",
+    `- cd ${cdPath}`,
+    `- ${packageManager} start`,
+    `- ${packageManager} run macos`,
+    `- ${packageManager} run windows`,
+    `- ${packageManager} run android`,
+    `- ${packageManager} run ios`,
+    `- ${packageManager} run web`,
+    ""
+  ];
+
+  log.success(lines.join("\n"), { withGuide: false });
 }
